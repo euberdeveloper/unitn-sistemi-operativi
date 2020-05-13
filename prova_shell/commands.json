@@ -1,0 +1,27 @@
+{
+    "add": {
+        "function": "add_shit",
+        "arguments": {
+            "first": {
+                "type": "int",
+                "min": 0,
+                "max": 5
+            },
+            "second": {
+                "type": "int",
+                "alias": "s",
+                "default": 10
+            }
+        }
+    },
+    "acc": {
+        "function": "acc",
+        "arguments": {
+            "numbers": {
+                "type": "array",
+                "itemType": "int",
+                "alias": "n"
+            }
+        }
+    }
+}
