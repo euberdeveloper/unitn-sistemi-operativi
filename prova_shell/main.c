@@ -95,21 +95,19 @@ STATE sh_command_acc(char** words, int size) {
                     free(argument);
                     return CONTINUE;
                 }
-                else {
-                    bool placeholder;
-                    while (i < size && sh_extract_argument(words[i], &placeholder) == NULL) {
-                        numbers[numbers_index++] = atoi(words[i]);
-                        if (numbers_index == numbers_size) {
-                            numbers_size *= 2;
-                            numbers = realloc(numbers, numbers_size * sizeof(int));
-                        }
-                        argument_numbers = true;
-                        i++;
+                bool placeholder;
+                while (i < size && sh_extract_argument(words[i], &placeholder) == NULL) {
+                    numbers[numbers_index++] = atoi(words[i]);
+                    if (numbers_index == numbers_size) {
+                        numbers_size *= 2;
+                        numbers = realloc(numbers, numbers_size * sizeof(int));
                     }
+                    argument_numbers = true;
+                    i++;
+                }
 
-                    if (i < size) {
-                        i--;
-                    }
+                if (i < size) {
+                    i--;
                 }
             }
         }
@@ -127,5 +125,5 @@ STATE sh_command_acc(char** words, int size) {
     }
     printf("\t]\n");
     // execute function
-    //acc(numbers, numbers_index);
+    //return acc(numbers, numbers_index);
 }
