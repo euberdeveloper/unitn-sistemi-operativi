@@ -6,7 +6,7 @@ static const _SH_INIT_BUFFER = 23;
 
 /* EXPORTED FUNCTIONS */
 
-SH_STATE sh_command_add(char **words, int n_words) {
+SH_STATE sh_handle_add(char **words, int n_words) {
     SH_STATE state = SH_CONTINUE;
 
     bool is_assigned_first = false;
@@ -55,7 +55,7 @@ SH_STATE sh_command_add(char **words, int n_words) {
     return state;
 }
 
-SH_STATE sh_command_acc(char **words, int n_words) {
+SH_STATE sh_handle_acc(char **words, int n_words) {
     SH_STATE state = SH_CONTINUE;
 
     bool is_assigned_numbers = false;

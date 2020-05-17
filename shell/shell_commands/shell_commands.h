@@ -6,6 +6,13 @@
 #include "general/general.h"
 #include "text/text.h"
 
+/* ENUMS */
+
+typedef enum {
+    SH_CONTINUE,
+    SH_EXIT
+} SH_STATE;
+
 /* EXTERNS */
 
 extern void shu_unknown_command(char *command);
@@ -27,15 +34,13 @@ extern bool shu_get_double_value(char* str_value, double* value);
 extern bool shu_get_char_value(char* str_value, char* value);
 extern char* shu_extract_argument(char *word, bool* is_alias);
 
-/* ENUMS */
-
-typedef enum {
-    SH_CONTINUE,
-    SH_EXIT
-} SH_STATE;
+extern STATE add_shit(int first, int second);
+extern STATE acc(int* numbers, int numbers_size);
 
 /* FUNCTIONS */
 
+SH_STATE sh_handle_add(char** words, int n_words);
+SH_STATE sh_handle_acc(char** words, int n_words);
 SH_STATE sh_parse_command(char** words, int n_words);
 void sh_loop();
 
