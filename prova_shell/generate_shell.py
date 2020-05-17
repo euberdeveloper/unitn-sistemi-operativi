@@ -19,7 +19,7 @@ def generate_command_required_arguments(command_details):
 def generate_command_arguments(command_name, command_details):
     result = ''
     arguments = command_details.get('arguments')
-    default_initial_size = 8
+    default_initial_size = 23
 
     for argument, argument_details in arguments.items():
         argument_type = argument_details.get('type')

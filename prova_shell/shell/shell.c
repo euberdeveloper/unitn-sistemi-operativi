@@ -55,7 +55,6 @@ char *sh_extract_argument(char *word, bool* is_alias) {
     const int len = strlen(word);
     char* argument = NULL;
 
-    int i;
     if (len > 2) {
         if (word[0] == '-' && word[1] == '-') {
             *is_alias = false;
