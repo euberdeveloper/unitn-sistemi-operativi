@@ -2,7 +2,8 @@
 
 /* HELPER CONSTANTS */
 
-static const _SH_INIT_BUFFER = 23;
+static const int _SH_INIT_BUFFER = 23;
+static const char* _SH_PROMPT_SYMBOL = ">> ";
 
 /* EXPORTED FUNCTIONS */
 
@@ -22,7 +23,7 @@ SH_STATE sh_handle_add(char **words, int n_words) {
         argument = shu_extract_argument(words[i], &is_alias);
 
         if (argument == NULL) {
-            shu_value_without_argument(argument);
+            shu_value_without_argument(words[i]);
         }
         else {
             if (strcmp(argument, "first") == 0) {
@@ -41,12 +42,16 @@ SH_STATE sh_handle_add(char **words, int n_words) {
                     finish = !shu_get_int_value(words[i], &second);
                 }
             }
+            else {
+                shu_unknown_argument("add", words[i]);
+            }
         }
     }
 
     if (!finish) {
         finish = !shu_check_required("add", "first", is_assigned_first);
     }
+
 
     if (!finish) {  
         state = add_shit(first, second);
@@ -72,7 +77,7 @@ SH_STATE sh_handle_acc(char **words, int n_words) {
         argument = shu_extract_argument(words[i], &is_alias);
 
         if (argument == NULL) {
-            shu_value_without_argument(argument);
+            shu_value_without_argument(words[i]);
         }
         else {
             if (strcmp(argument, "numbers") == 0 || (is_alias && strcmp(argument, "n") == 0)) {
@@ -89,7 +94,7 @@ SH_STATE sh_handle_acc(char **words, int n_words) {
                             numbers_size *= 2;
                             numbers = realloc(numbers, numbers_size * sizeof(int));
                         }
-                        finish = !shu_get_int_value(words[i], numbers[numbers_index++]);
+                        finish = !shu_get_int_value(words[i], &numbers[numbers_index++]);
                         is_assigned_numbers = true;
                         i++;
                     }
@@ -100,6 +105,9 @@ SH_STATE sh_handle_acc(char **words, int n_words) {
                     finish = !shu_check_noval_array("acc", "numbers", is_assigned_numbers);                
                 }
             }
+            else {
+                shu_unknown_argument("acc", words[i]);
+            }
         }
     }
 
@@ -108,7 +116,7 @@ SH_STATE sh_handle_acc(char **words, int n_words) {
     }
 
     if (!finish) {  
-        state = add_shit(numbers, numbers_index);
+        state = acc(numbers, numbers_index);
     }
 
     return state;
@@ -121,11 +129,11 @@ SH_STATE sh_parse_command(char **words, int size) {
     if (size > 0) {
         char *command = words[0];
 
-        if (strcmp(command, "add" == 0)) {
-            state = sh_command_add(words, size);
+        if (strcmp(command, "add") == 0) {
+            state = sh_handle_add(words, size);
         }
-        else if (strcmp(command, "acc" == 0)) {
-            state = sh_command_add(words, size);
+        else if (strcmp(command, "acc") == 0) {
+            state = sh_handle_acc(words, size);
         }
         else {
             shu_unknown_command(command);
@@ -145,6 +153,7 @@ void sh_loop() {
     char *command, **words;
 
     while (state != SH_EXIT) {
+        printf("%s", _SH_PROMPT_SYMBOL);
         command = txt_readline();
         words = txt_splitline(command, &n_words);
         state = sh_parse_command(words, n_words);

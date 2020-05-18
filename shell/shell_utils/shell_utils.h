@@ -3,7 +3,9 @@
 
 /* IMPORTS */
 
-#include "string.h"
+#define _GNU_SOURCE 
+#include <stdio.h>
+#include <string.h>
 
 #include "../general/general.h"
 #include "../logger/logger.h"
@@ -11,6 +13,7 @@
 /* FUNCTIONS */
 
 void shu_unknown_command(char *command);
+void shu_unknown_argument(char *command, char* argument);
 void shu_value_without_argument(char* value);
 
 bool shu_check_noval(const char *command, const char *argument, int size, int *i);

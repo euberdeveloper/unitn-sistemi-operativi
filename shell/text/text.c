@@ -31,7 +31,7 @@ char **txt_splitline(char *line, int *size) {
     }
 
     for(token = strtok(line, _TXT_SPLIT_DELIMITERS); token != NULL; token = strtok(NULL, _TXT_SPLIT_DELIMITERS)) {
-        words[index++] = token;
+        words[index++] = strdup(token);
 
         if (index >= *size) {
             *size *= 2;

@@ -3,13 +3,19 @@
 void shu_unknown_command(char* command) {
     char *message;
     asprintf(&message, "unknown command %s", command);
-    log_error_ctx_del(message, strdup("SHELL"));
+    log_error_del_ctx(message, strdup("SHELL"));
+}
+
+void shu_unknown_argument(char *command, char* argument) {
+    char *message;
+    asprintf(&message, "command %s: unknown argument %s", command, argument);
+    log_warning_del_ctx(message, strdup("SHELL"));
 }
 
 void shu_value_without_argument(char* value) {
     char *message;
     asprintf(&message, "value without argument, %s ignored", value);
-    log_error_ctx_del(message, strdup("SHELL"));
+    log_warning_del_ctx(message, strdup("SHELL"));
 }
 
 bool shu_check_noval(const char *command, const char *argument, int size, int *i) {
@@ -20,7 +26,7 @@ bool shu_check_noval(const char *command, const char *argument, int size, int *i
 
         result = false;
         asprintf(&message, "%s: argument %s has no value\n", command, argument);
-        log_error_ctx_del(message, strdup("SHELL"));
+        log_error_del_ctx(message, strdup("SHELL"));
     }
 
     return result;
@@ -30,7 +36,7 @@ bool shu_check_noval_array(const char *command, const char *argument, bool is_as
     if (!is_assigned) {
         char* message;
         asprintf(&message, "%s: argument %s can not be an empty array\n", command, argument);
-        log_error_ctx_del(message, strdup("SHELL"));
+        log_error_del_ctx(message, strdup("SHELL"));
     }
 
     return is_assigned;
@@ -40,7 +46,7 @@ bool shu_check_required(const char* command, const char* argument, bool is_assig
     if (!is_assigned) {
         char *message;
         asprintf(&message, "%s: argument %s is required\n", command, argument);
-        log_error_ctx_del(message, strdup("SHELL"));
+        log_error_del_ctx(message, strdup("SHELL"));
     }
 
     return is_assigned;
@@ -51,7 +57,7 @@ bool shu_check_min_int(const char* command, const char* argument, int value, int
 
     if (value < min) {
         char *message;
-        aprintf(&message, "%s: argument %s is %i but must be greater or equal than %i\n", command, argument, value, min);
+        asprintf(&message, "%s: argument %s is %i but must be greater or equal than %i\n", command, argument, value, min);
         result = false;
     }
 
@@ -62,7 +68,7 @@ bool shu_check_max_int(const char* command, const char* argument, int value, int
 
     if (value > max) {
         char *message;
-        aprintf(&message, "%s: argument %s is %i but must be lower or equal than %i\n", command, argument, value, max);
+        asprintf(&message, "%s: argument %s is %i but must be lower or equal than %i\n", command, argument, value, max);
         result = false;
     }
 
@@ -73,7 +79,7 @@ bool shu_check_min_long(const char* command, const char* argument, long value, l
 
     if (value < min) {
         char *message;
-        aprintf(&message, "%s: argument %s is %i but must be greater or equal than %i\n", command, argument, value, min);
+        asprintf(&message, "%s: argument %s is %li but must be greater or equal than %li\n", command, argument, value, min);
         result = false;
     }
 
@@ -84,7 +90,7 @@ bool shu_check_max_long(const char* command, const char* argument, long value, l
 
     if (value > max) {
         char *message;
-        aprintf(&message, "%s: argument %s is %i but must be lower or equal than %i\n", command, argument, value, max);
+        asprintf(&message, "%s: argument %s is %li but must be lower or equal than %li\n", command, argument, value, max);
         result = false;
     }
 
@@ -95,7 +101,7 @@ bool shu_check_min_float(const char* command, const char* argument, float value,
 
     if (value < min) {
         char *message;
-        aprintf(&message, "%s: argument %s is %i but must be greater or equal than %i\n", command, argument, value, min);
+        asprintf(&message, "%s: argument %s is %f but must be greater or equal than %f\n", command, argument, value, min);
         result = false;
     }
 
@@ -106,7 +112,7 @@ bool shu_check_max_float(const char* command, const char* argument, float value,
 
     if (value > max) {
         char *message;
-        aprintf(&message, "%s: argument %s is %i but must be lower or equal than %i\n", command, argument, value, max);
+        asprintf(&message, "%s: argument %s is %f but must be lower or equal than %f\n", command, argument, value, max);
         result = false;
     }
 
@@ -117,7 +123,7 @@ bool shu_check_min_double(const char* command, const char* argument, double valu
 
     if (value < min) {
         char *message;
-        aprintf(&message, "%s: argument %s is %i but must be greater or equal than %i\n", command, argument, value, min);
+        asprintf(&message, "%s: argument %s is %f but must be greater or equal than %f\n", command, argument, value, min);
         result = false;
     }
 
@@ -128,7 +134,7 @@ bool shu_check_max_double(const char* command, const char* argument, double valu
 
     if (value > max) {
         char *message;
-        aprintf(&message, "%s: argument %s is %i but must be lower or equal than %i\n", command, argument, value, max);
+        asprintf(&message, "%s: argument %s is %f but must be lower or equal than %f\n", command, argument, value, max);
         result = false;
     }
 
