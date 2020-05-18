@@ -139,8 +139,6 @@ SH_STATE sh_parse_command(char **words, int size) {
             shu_unknown_command(command);
             state = SH_CONTINUE;
         }
-
-        free(command);
     }
 
     return state;
@@ -157,8 +155,8 @@ void sh_loop() {
         command = txt_readline();
         words = txt_splitline(command, &n_words);
         state = sh_parse_command(words, n_words);
-    }
 
-    free(command);
-    txt_free_string_array(words, n_words);
+        free(command);
+        txt_free_string_array(words, n_words);
+    }
 }
