@@ -193,7 +193,7 @@ def generate_commands(commands):
 
     for index, command in enumerate(commands):
         costruct = 'if' if index == 0 else 'else if'
-        condition = f' (strcmp(command, "{command}" == 0) '
+        condition = f' (strcmp(command, "{command}" == 0)) '
         fixed = '''{
             state = sh_command_add(words, size);
         }
