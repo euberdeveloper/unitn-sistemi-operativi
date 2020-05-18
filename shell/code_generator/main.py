@@ -7,7 +7,9 @@ from pathlib import Path
 # Template files
 
 HEADER_TEMPLATE = './templates/header.template.txt'
-CODE_TEMPLATE = './templates/code.template.txt'
+C_TEMPLATE = './templates/c.template.txt'
+SH_PARSE_COMMAND_TEMPLATE = './templates/sh_parse_command.template.txt'
+SH_HANDLE_COMMAND_TEMPLATE = './templates/sh_handle_command.template.txt'
 
 # Arguments
 
@@ -19,8 +21,14 @@ OUTPUT_PATH = sys.argv[2] if len(sys.argv) > 1 else '../TEST'
 with open(HEADER_TEMPLATE) as header_template_file:
     header_template = header_template_file.read()
 
-with open(CODE_TEMPLATE) as code_template_file:
-    code_template = code_template_file.read()
+with open(C_TEMPLATE) as c_template_file:
+    c_template = c_template_file.read()
+
+with open(SH_PARSE_COMMAND_TEMPLATE) as sh_parse_command_file:
+    sh_parse_command = sh_parse_command_file.read()
+
+with open(SH_HANDLE_COMMAND_TEMPLATE) as sh_handle_command_file:
+    sh_handle_command = sh_handle_command_file.read()
 
 # Read json file
 
@@ -54,6 +62,18 @@ def get_function_params(arguments: dict):
     
     return ', '.join(params)
 
+def get_strcmp_condition(first: str, second: str):
+    return f'strcmp({first}, {second}) == 0'
+
+def get_conditional(condition: str, content: str, *, index=0):
+    if index == 0:
+        return f'if ({condition}) {{\n\t{content}\n}}'
+    else:
+        return f'else if ({condition}) {{\n\t{content}\n}}'
+
+def tab(text: str, n_tabs: int, *, tab_first=False):
+    return '\n'.join([(('\t' * n_tabs) if tab_first or index != 0 else '') + line for index, line in enumerate(text.splitlines())])
+
 # Generate output directory
 
 Path(OUTPUT_PATH).mkdir(parents=True, exist_ok=True)
@@ -78,3 +98,40 @@ def generate_header_file(commands: dict):
 h_output = f'{OUTPUT_PATH}/{library_name(OUTPUT_PATH)}.h'
 with open(h_output, 'w') as h_output_file:
     h_output_file.write(generate_header_file(commands)) 
+
+# Generate c file
+
+def generate_c_handle_command_required_declarations(arguments: dict):
+    lines = [f'bool is_assigned_{argument_name};' for argument_name, argument_details in arguments.items() if argument_details.get('default') is None]
+    return '\n'.join(lines)
+
+def generate_c_handle_command_function(command_name: str, command_details: dict):
+    arguments = command_details.get('arguments')
+
+    required_declarations = generate_c_handle_command_required_declarations(arguments)
+
+    return sh_handle_command.format(command_name = command_name, required_declarations = required_declarations, arguments_declarations = '', arguments_conditions = '', required_check = '', command_function = '')
+
+def generate_c_handle_command_functions(commands: dict):
+    functions = [generate_c_handle_command_function(command_name, command_details) for command_name, command_details in commands.items()]
+    return '\n'.join(functions)
+
+def generate_c_parse_command_function(commands: dict):
+    command_names = commands.keys()
+    gen_condition = lambda command_name, index: get_conditional(get_strcmp_condition('command', command_name), 'state = sh_handle_add(words, size);', index=index)
+
+    conditions = [gen_condition(command_name, index) for index, command_name in enumerate(command_names)]
+    commands_conditions = tab('\n'.join(conditions), 1)
+
+    return sh_parse_command.format(commands_conditions = commands_conditions)
+
+def generate_c_file(name: str, commands: dict):
+    include = f'{name}.h'
+    prompt_symbol = commands.get('promptSymbol') if commands.get('promptSymbol') else '>> '
+    parse_command_function = generate_c_parse_command_function(commands)
+    handle_command_functions = generate_c_handle_command_functions(commands)
+    return c_template.format(include = include, prompt_symbol = prompt_symbol, parse_command_function = parse_command_function, handle_command_functions = handle_command_functions)
+
+c_output = f'{OUTPUT_PATH}/{library_name(OUTPUT_PATH)}.c'
+with open(c_output, 'w') as c_output_file:
+    c_output_file.write(generate_c_file(library_name(OUTPUT_PATH), commands)) 
