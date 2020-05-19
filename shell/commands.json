@@ -1,25 +1,89 @@
 {
-    "add": {
-        "function": "add_shit",
+    "init": {
+        "function": "init",
         "arguments": {
-            "first": {
+            "p_number": {
                 "type": "int",
-                "min": 0,
-                "max": 5
+                "alias": "n",
+                "min": 1
             },
-            "second": {
+            "q_number": {
                 "type": "int",
-                "alias": "s",
-                "default": 10
+                "alias": "m",
+                "min": 1
+            },
+            "inputs": {
+                "type": "array<char*>",
+                "alias": "i"
+            },
+            "recursive": {
+                "type": "bool",
+                "alias": "r"
             }
         }
     },
-    "acc": {
-        "function": "acc",
+    "set": {
+        "function": "set",
         "arguments": {
-            "numbers": {
-                "type": "array<int>",
-                "alias": "n"
+            "p_number": {
+                "type": "int",
+                "alias": "n",
+                "default": 0,
+                "min": 1
+            },
+            "q_number": {
+                "type": "int",
+                "alias": "m",
+                "default": 0,
+                "min": 1
+            },
+            "inputs": {
+                "type": "array<char*>",
+                "alias": "i",
+                "default": null
+            },
+            "recursive": {
+                "type": "bool",
+                "alias": "r"
+            },
+            "keep": {
+                "type": "bool",
+                "alias": "k"
+            }
+        }
+    },
+    "restart": {
+        "function": "restart",
+        "arguments": {
+            "p_number": {
+                "type": "int",
+                "alias": "n",
+                "default": 0,
+                "min": 1
+            },
+            "q_number": {
+                "type": "int",
+                "alias": "m",
+                "default": 0,
+                "min": 1
+            },
+            "inputs": {
+                "type": "array<char*>",
+                "alias": "i",
+                "default": null
+            },
+            "recursive": {
+                "type": "bool",
+                "alias": "r"
+            }
+        }
+    },
+    "pop": {
+        "function": "pop",
+        "arguments": {
+            "inputs": {
+                "type": "array<char*>",
+                "alias": "i"
             }
         }
     }

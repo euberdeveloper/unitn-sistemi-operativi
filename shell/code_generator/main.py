@@ -173,9 +173,9 @@ def generate_c_handle_command_arguments_condition_assign_argument(command_name: 
     if argument_type == 'array':
         return generate_c_handle_command_arguments_condition_assign_argument_array(command_name, argument_name, argument_item_type)
     elif argument_type == 'bool':
-        return f'{argument_name} = true'
+        return f'{argument_name} = true;'
     elif argument_type == 'char*':
-        return f'{argument_name} = strdup(words[i])'
+        return f'{argument_name} = strdup(words[i]);'
     else:
         assign_str = get_argument_assignment(command_name, argument_name, argument_type)
         max_str = get_argument_max(command_name, argument_name, argument_type, argument_max) if argument_max is not None else ''
@@ -197,7 +197,7 @@ def generate_c_handle_command_arguments_condition(command_name, argument_name, a
 
     check_noval = f'finish = !shu_check_noval("{command_name}", "{argument_name}", n_words, &i);' if argument_type != 'bool' else ''
 
-    assign_is_assigned = tab(f'is_assigned_{argument_name} = true;' if argument_default is None or argument_type == 'bool' else '', 1)
+    assign_is_assigned = tab(f'is_assigned_{argument_name} = true;' if argument_default is None and argument_type != 'bool' and argument_type != 'array' else '', 1)
 
     assign_argument = tab(generate_c_handle_command_arguments_condition_assign_argument(command_name, argument_name, argument_details), 2)
 

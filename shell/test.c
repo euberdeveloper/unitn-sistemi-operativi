@@ -1,17 +1,12 @@
 #include "shell_utils/shell_utils.h"
 #include "shell_commands/shell_commands.h"
 
-SH_STATE add_shit(int first, int second) {
-    printf("Adding shit...\n");
-    printf("First %i, Second %i\n", first, second);
-    return SH_CONTINUE;
-}
-SH_STATE acc(int* numbers, int numbers_size) {
-    printf("Acc\n");
-    printf("Size: %i\n", numbers_size);
+SH_STATE init(int p_number, int q_number, char** inputs, int inputs_size, bool recursive) {
+    printf("Init\n");
+    printf("n: %d, m: %d, i_size: %d, rec: %d\n", p_number, q_number, inputs_size, recursive);
     int i;
-    for (i = 0; i < numbers_size; i++) {
-        printf("%i - %i\n", i, numbers[i]);
+    for (i = 0; i < inputs_size; i++) {
+        printf("%s\n", inputs[i]);
     }
     return SH_CONTINUE;
 }

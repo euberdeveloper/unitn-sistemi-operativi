@@ -36,8 +36,10 @@ extern bool shu_get_double_value(const char* command, const char* argument, char
 extern bool shu_get_char_value(const char* command, const char* argument, char* str_value, char* value);
 extern char* shu_extract_argument(char *word, bool* is_alias);
 
-extern SH_STATE add_shit(int first, int second);
-extern SH_STATE acc(int* numbers, int numbers_size);
+extern SH_STATE init(int p_number, int q_number, char** inputs, int inputs_size, bool recursive);
+extern SH_STATE set(int p_number, int q_number, char** inputs, int inputs_size, bool recursive, bool keep);
+extern SH_STATE restart(int p_number, int q_number, char** inputs, int inputs_size, bool recursive);
+extern SH_STATE pop(char** inputs, int inputs_size);
 
 /* FUNCTIONS */
 
