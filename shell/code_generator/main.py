@@ -17,7 +17,7 @@ SH_HANDLE_COMMAND_ARRAY_ASSIGNMENT_TEMPLATE = './templates/sh_handle_command_arr
 # Arguments
 
 JSON_COMMANDS = sys.argv[1] if len(sys.argv) > 1 else '../commands.json'
-OUTPUT_PATH = sys.argv[2] if len(sys.argv) > 1 else '../TEST'
+OUTPUT_PATH = sys.argv[2] if len(sys.argv) > 1 else '../shell_commands'
 
 # Read template files
 
@@ -103,11 +103,11 @@ def tab(text: str, n_tabs: int, *, tab_first=False):
 def get_argument_assignment(command_name: str, argument_name: str, argument_type: str):
     return f'!shu_get_{argument_type}_value("{command_name}", "{argument_name}", words[i], &{argument_name})'
 
-def get_argument_max(command_name: str, argument_name: str, argument_type: str, max: str):
-    return f'\n\t|| !shu_check_max_{argument_type}("{command_name}", "{argument_name}", {argument_name}, 0)'
+def get_argument_max(command_name: str, argument_name: str, argument_type: str, max_value: str):
+    return f'\n\t|| !shu_check_max_{argument_type}("{command_name}", "{argument_name}", {argument_name}, {max_value})'
 
-def get_argument_min(command_name: str, argument_name: str, argument_type: str, min: str):
-    return f'\n\t|| !shu_check_min_{argument_type}("{command_name}", "{argument_name}", {argument_name}, 0)'
+def get_argument_min(command_name: str, argument_name: str, argument_type: str, min_value: str):
+    return f'\n\t|| !shu_check_min_{argument_type}("{command_name}", "{argument_name}", {argument_name}, {min_value})'
 
 # Generate output directory
 
@@ -137,7 +137,7 @@ with open(h_output, 'w') as h_output_file:
 # Generate c file
 
 def generate_c_handle_command_required_declarations(arguments: dict):
-    lines = [f'bool is_assigned_{argument_name};' for argument_name, argument_details in arguments.items() if argument_details.get('default') is None or argument_details.get('type') == 'bool']
+    lines = [f'bool is_assigned_{argument_name} = false;' for argument_name, argument_details in arguments.items() if argument_details.get('default') is None or argument_details.get('type') == 'bool']
     return '\n'.join(lines)
 
 def generate_c_handle_command_argument_declaration(argument_name: str, argument_details: dict):
@@ -161,7 +161,7 @@ def generate_c_handle_command_arguments_condition_assign_argument_array(command_
     if argument_item_type == 'char*':
         assignment = f'{argument_name}[{argument_name}_index++] = strdup(words[i]);'
     else:
-        assignment = f'finish = !shu_get_{argument_item_type}_value({command_name}, {argument_name}, words[i], &{argument_name}[{argument_name}_index++]);'
+        assignment = f'finish = !shu_get_{argument_item_type}_value("{command_name}", "{argument_name}", words[i], &{argument_name}[{argument_name}_index++]);'
 
     return sh_handle_command_array_assignment.format(command_name=command_name, argument_name=argument_name, argument_item_type=argument_item_type, assignment=assignment)
 
@@ -251,7 +251,7 @@ def generate_c_handle_command_functions(commands: dict):
 
 def generate_c_parse_command_function(commands: dict):
     command_names = commands.keys()
-    gen_condition = lambda command_name, index: get_conditional(get_strcmp_condition('command', f'"command_name"'), 'state = sh_handle_add(words, size);', index=index)
+    gen_condition = lambda command_name, index: get_conditional(get_strcmp_condition('command', f'"{command_name}"'), f'state = sh_handle_{command_name}(words, size);', index=index)
 
     conditions = [gen_condition(command_name, index) for index, command_name in enumerate(command_names)]
     commands_conditions = tab('\n'.join(conditions), 2)

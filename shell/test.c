@@ -4,6 +4,7 @@
 SH_STATE add_shit(int first, int second) {
     printf("Adding shit...\n");
     printf("First %i, Second %i\n", first, second);
+    return SH_CONTINUE;
 }
 SH_STATE acc(int* numbers, int numbers_size) {
     printf("Acc\n");
@@ -12,6 +13,7 @@ SH_STATE acc(int* numbers, int numbers_size) {
     for (i = 0; i < numbers_size; i++) {
         printf("%i - %i\n", i, numbers[i]);
     }
+    return SH_CONTINUE;
 }
 
 int main() {
