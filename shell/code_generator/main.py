@@ -100,6 +100,15 @@ def get_conditional(condition: str, content: str, *, index=0):
 def tab(text: str, n_tabs: int, *, tab_first=False):
     return '\n'.join([(('\t' * n_tabs) if tab_first or index != 0 else '') + line for index, line in enumerate(text.splitlines())])
 
+def get_argument_assignment(command_name: str, argument_name: str, argument_type: str):
+    return f'!shu_get_{argument_type}_value("{command_name}", "{argument_name}", words[i], &{argument_name})'
+
+def get_argument_max(command_name: str, argument_name: str, argument_type: str, max: str):
+    return f'\n\t|| !shu_check_max_{argument_type}("{command_name}", "{argument_name}", {argument_name}, 0)'
+
+def get_argument_min(command_name: str, argument_name: str, argument_type: str, min: str):
+    return f'\n\t|| !shu_check_min_{argument_type}("{command_name}", "{argument_name}", {argument_name}, 0)'
+
 # Generate output directory
 
 Path(OUTPUT_PATH).mkdir(parents=True, exist_ok=True)
@@ -128,7 +137,7 @@ with open(h_output, 'w') as h_output_file:
 # Generate c file
 
 def generate_c_handle_command_required_declarations(arguments: dict):
-    lines = [f'bool is_assigned_{argument_name};' for argument_name, argument_details in arguments.items() if argument_details.get('default') is None]
+    lines = [f'bool is_assigned_{argument_name};' for argument_name, argument_details in arguments.items() if argument_details.get('default') is None or argument_details.get('type') == 'bool']
     return '\n'.join(lines)
 
 def generate_c_handle_command_argument_declaration(argument_name: str, argument_details: dict):
@@ -138,6 +147,8 @@ def generate_c_handle_command_argument_declaration(argument_name: str, argument_
 
     if argument_type == 'array':
         return f'int {argument_name}_size = 0;\nint {argument_name}_index = 0;\n{argument_item_type} *{argument_name} = NULL;'
+    elif argument_type == 'bool':
+        return f'{argument_type} {argument_name} = false;'
     else:
         default_str = '' if argument_default is None else f'= {argument_default}'
         return f'{argument_type} {argument_name}{default_str};'
@@ -145,6 +156,32 @@ def generate_c_handle_command_argument_declaration(argument_name: str, argument_
 def generate_c_handle_command_arguments_declarations(arguments: dict):
     lines = [generate_c_handle_command_argument_declaration(argument_name, argument_details) for argument_name, argument_details in arguments.items()]
     return '\n'.join(lines)
+
+def generate_c_handle_command_arguments_condition_assign_argument_array(command_name: str, argument_name: str, argument_item_type: str):
+    if argument_item_type == 'char*':
+        assignment = f'{argument_name}[{argument_name}_index++] = strdup(words[i]);'
+    else:
+        assignment = f'finish = !shu_get_{argument_item_type}_value({command_name}, {argument_name}, words[i], &{argument_name}[{argument_name}_index++]);'
+
+    return sh_handle_command_array_assignment.format(command_name=command_name, argument_name=argument_name, argument_item_type=argument_item_type, assignment=assignment)
+
+def generate_c_handle_command_arguments_condition_assign_argument(command_name: str, argument_name: str, argument_details: dict):
+    argument_raw_type = argument_details.get('type')
+    argument_type, argument_item_type = split_array_argument(argument_raw_type)
+    argument_max, argument_min = argument_details.get('max'), argument_details.get('min')
+
+    if argument_type == 'array':
+        return generate_c_handle_command_arguments_condition_assign_argument_array(command_name, argument_name, argument_item_type)
+    elif argument_type == 'bool':
+        return f'{argument_name} = true'
+    elif argument_type == 'char*':
+        return f'{argument_name} = strdup(words[i])'
+    else:
+        assign_str = get_argument_assignment(command_name, argument_name, argument_type)
+        max_str = get_argument_max(command_name, argument_name, argument_type, argument_max) if argument_max is not None else ''
+        min_str = get_argument_min(command_name, argument_name, argument_type, argument_min) if argument_min is not None else ''
+        return f'finish = {assign_str}{max_str}{min_str};'
+    
 
 def generate_c_handle_command_arguments_condition(command_name, argument_name, argument_details, *, index):
     argument_alias = argument_details.get('alias')
@@ -155,14 +192,16 @@ def generate_c_handle_command_arguments_condition(command_name, argument_name, a
     
     condition_construct = 'if' if index == 0 else 'else if'
     condition_main = f'strcmp(argument, "{argument_name}") == 0'
-    condition_alias = f' || (is_alias && strcmp(argument, "{argument_alias}") == 0' if argument_alias is not None else ''
+    condition_alias = f' || (is_alias && strcmp(argument, "{argument_alias}") == 0)' if argument_alias is not None else ''
     condition = f'{condition_construct} ({condition_main}{condition_alias})'
 
     check_noval = f'finish = !shu_check_noval("{command_name}", "{argument_name}", n_words, &i);' if argument_type != 'bool' else ''
 
-    assign_is_assigned = f'is_assigned_{argument_name} = true;' if argument_default is None else ''
+    assign_is_assigned = tab(f'is_assigned_{argument_name} = true;' if argument_default is None or argument_type == 'bool' else '', 1)
 
-    return sh_handle_command_condition_template.format(condition=condition, check_noval=check_noval, assign_is_assigned=assign_is_assigned, assign_argument='')
+    assign_argument = tab(generate_c_handle_command_arguments_condition_assign_argument(command_name, argument_name, argument_details), 2)
+
+    return sh_handle_command_condition_template.format(condition=condition, check_noval=check_noval, assign_is_assigned=assign_is_assigned, assign_argument=assign_argument)
 
 def generate_c_handle_command_arguments_conditions(command_name: str, command_details: dict):
     arguments = command_details.get('arguments')
@@ -177,10 +216,11 @@ def generate_c_handle_command_arguments_conditions(command_name: str, command_de
 
 def generate_c_handle_command_required_check(command_name: str, argument_name: str, argument_details: dict):
     argument_default = argument_details.get('default')
+    argument_type = argument_details.get('type')
 
     return (
         get_conditional('!finish', f'finish = !shu_check_required("{command_name}", "{argument_name}", is_assigned_{argument_name});') 
-        if argument_default is None 
+        if argument_default is None and argument_type != 'bool'
         else '')
 
 def generate_c_handle_command_required_checks(command_name: str, arguments: dict):
@@ -211,10 +251,10 @@ def generate_c_handle_command_functions(commands: dict):
 
 def generate_c_parse_command_function(commands: dict):
     command_names = commands.keys()
-    gen_condition = lambda command_name, index: get_conditional(get_strcmp_condition('command', command_name), 'state = sh_handle_add(words, size);', index=index)
+    gen_condition = lambda command_name, index: get_conditional(get_strcmp_condition('command', f'"command_name"'), 'state = sh_handle_add(words, size);', index=index)
 
     conditions = [gen_condition(command_name, index) for index, command_name in enumerate(command_names)]
-    commands_conditions = tab('\n'.join(conditions), 1)
+    commands_conditions = tab('\n'.join(conditions), 2)
 
     return sh_parse_command_template.format(commands_conditions = commands_conditions)
 

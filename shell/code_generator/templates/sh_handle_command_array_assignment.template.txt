@@ -7,7 +7,7 @@ while (i < n_words && !finish && shu_extract_argument(words[i], &_) == NULL) {{
         {argument_name}_size *= 2;
         {argument_name} = realloc({argument_name}, {argument_name}_size * sizeof({argument_item_type}));
     }}
-    finish = !shu_get_{argument_item_type}_value(words[i], &{argument_name}[{argument_name}_index++]);
+    {assignment}
     is_assigned_{argument_name} = true;
     i++;
 }}

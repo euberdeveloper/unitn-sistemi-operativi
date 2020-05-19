@@ -58,6 +58,7 @@ bool shu_check_min_int(const char* command, const char* argument, int value, int
     if (value < min) {
         char *message;
         asprintf(&message, "%s: argument %s is %i but must be greater or equal than %i\n", command, argument, value, min);
+        log_error_del_ctx(message, strdup("SHELL"));
         result = false;
     }
 
@@ -69,6 +70,7 @@ bool shu_check_max_int(const char* command, const char* argument, int value, int
     if (value > max) {
         char *message;
         asprintf(&message, "%s: argument %s is %i but must be lower or equal than %i\n", command, argument, value, max);
+        log_error_del_ctx(message, strdup("SHELL"));
         result = false;
     }
 
@@ -80,6 +82,7 @@ bool shu_check_min_long(const char* command, const char* argument, long value, l
     if (value < min) {
         char *message;
         asprintf(&message, "%s: argument %s is %li but must be greater or equal than %li\n", command, argument, value, min);
+        log_error_del_ctx(message, strdup("SHELL"));
         result = false;
     }
 
@@ -91,6 +94,7 @@ bool shu_check_max_long(const char* command, const char* argument, long value, l
     if (value > max) {
         char *message;
         asprintf(&message, "%s: argument %s is %li but must be lower or equal than %li\n", command, argument, value, max);
+        log_error_del_ctx(message, strdup("SHELL"));
         result = false;
     }
 
@@ -102,6 +106,7 @@ bool shu_check_min_float(const char* command, const char* argument, float value,
     if (value < min) {
         char *message;
         asprintf(&message, "%s: argument %s is %f but must be greater or equal than %f\n", command, argument, value, min);
+        log_error_del_ctx(message, strdup("SHELL"));
         result = false;
     }
 
@@ -113,6 +118,7 @@ bool shu_check_max_float(const char* command, const char* argument, float value,
     if (value > max) {
         char *message;
         asprintf(&message, "%s: argument %s is %f but must be lower or equal than %f\n", command, argument, value, max);
+        log_error_del_ctx(message, strdup("SHELL"));
         result = false;
     }
 
@@ -124,6 +130,7 @@ bool shu_check_min_double(const char* command, const char* argument, double valu
     if (value < min) {
         char *message;
         asprintf(&message, "%s: argument %s is %f but must be greater or equal than %f\n", command, argument, value, min);
+        log_error_del_ctx(message, strdup("SHELL"));
         result = false;
     }
 
@@ -135,33 +142,34 @@ bool shu_check_max_double(const char* command, const char* argument, double valu
     if (value > max) {
         char *message;
         asprintf(&message, "%s: argument %s is %f but must be lower or equal than %f\n", command, argument, value, max);
+        log_error_del_ctx(message, strdup("SHELL"));
         result = false;
     }
 
     return result;
 }
 
-bool shu_get_int_value(char* str_value, int* value) {
+bool shu_get_int_value(const char *command, const char *argument, char* str_value, int* value) {
     *value = atoi(str_value);
     return true;
 }
 
-bool shu_get_long_value(char* str_value, long* value) {
+bool shu_get_long_value(const char *command, const char *argument, char* str_value, long* value) {
     *value = atol(str_value);
     return true;
 }
 
-bool shu_get_float_value(char* str_value, float* value) {
+bool shu_get_float_value(const char *command, const char *argument, char* str_value, float* value) {
     *value = (float) atof(str_value);
     return true;
 }
 
-bool shu_get_double_value(char* str_value, double* value) {
+bool shu_get_double_value(const char *command, const char *argument, char* str_value, double* value) {
     *value = atof(str_value);
     return true;
 }
 
-bool shu_get_char_value(char* str_value, char* value) {
+bool shu_get_char_value(const char *command, const char *argument, char* str_value, char* value) {
     bool result;
 
     if (strlen(str_value) == 1) {
@@ -169,6 +177,9 @@ bool shu_get_char_value(char* str_value, char* value) {
         result = true;
     }
     else {
+        char *message;
+        asprintf(&message, "%s: argument %s has not a valid char value\n", command, argument, value);
+        log_error_del_ctx(message, strdup("SHELL"));
         result = false;
     }
 

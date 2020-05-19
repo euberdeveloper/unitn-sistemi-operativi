@@ -28,11 +28,11 @@ bool shu_check_max_float(const char *command, const char *argument, float value,
 bool shu_check_min_double(const char *command, const char *argument, double value, double min);
 bool shu_check_max_double(const char *command, const char *argument, double value, double max);
 
-bool shu_get_int_value(char* str_value, int* value);
-bool shu_get_long_value(char* str_value, long* value);
-bool shu_get_float_value(char* str_value, float* value);
-bool shu_get_double_value(char* str_value, double* value);
-bool shu_get_char_value(char* str_value, char* value);
+bool shu_get_int_value(const char *command, const char *argument, char* str_value, int* value);
+bool shu_get_long_value(const char *command, const char *argument, char* str_value, long* value);
+bool shu_get_float_value(const char *command, const char *argument, char* str_value, float* value);
+bool shu_get_double_value(const char *command, const char *argument, char* str_value, double* value);
+bool shu_get_char_value(const char *command, const char *argument, char* str_value, char* value);
 
 char* shu_extract_argument(char *word, bool* is_alias);
 

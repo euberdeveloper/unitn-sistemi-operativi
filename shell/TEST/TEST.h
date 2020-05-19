@@ -29,11 +29,11 @@ extern bool shu_check_min_float(const char *command, const char *argument, float
 extern bool shu_check_max_float(const char *command, const char *argument, float value, float max);
 extern bool shu_check_min_double(const char *command, const char *argument, double value, double min);
 extern bool shu_check_max_double(const char *command, const char *argument, double value, double max);
-extern bool shu_get_int_value(char* str_value, int* value);
-extern bool shu_get_long_value(char* str_value, long* value);
-extern bool shu_get_float_value(char* str_value, float* value);
-extern bool shu_get_double_value(char* str_value, double* value);
-extern bool shu_get_char_value(char* str_value, char* value);
+extern bool shu_get_int_value(const char* command, const char* argument, char* str_value, int* value);
+extern bool shu_get_long_value(const char* command, const char* argument, char* str_value, long* value);
+extern bool shu_get_float_value(const char* command, const char* argument, char* str_value, float* value);
+extern bool shu_get_double_value(const char* command, const char* argument, char* str_value, double* value);
+extern bool shu_get_char_value(const char* command, const char* argument, char* str_value, char* value);
 extern char* shu_extract_argument(char *word, bool* is_alias);
 
 extern SH_STATE add_shit(int first, int second);

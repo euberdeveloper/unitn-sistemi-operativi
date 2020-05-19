@@ -30,16 +30,16 @@ SH_STATE sh_handle_add(char **words, int n_words) {
                 finish = !shu_check_noval("add", "first", n_words, &i);
                 if (!finish) {
                     is_assigned_first = true;
-                    finish = !shu_get_int_value(words[i], &first) 
-                        || !shu_check_min_int(words[i], "first", first, 0) 
-                        || !shu_check_max_int(words[i], "first", first, 5);
+                    finish = !shu_get_int_value("add", "first", words[i], &first) 
+                        || !shu_check_min_int("add", "first", first, 0) 
+                        || !shu_check_max_int("add", "first", first, 5);
                     
                 }
             }
             else if (strcmp(argument, "second") == 0 || (is_alias && strcmp(argument, "s") == 0)) {
                finish = !shu_check_noval("add", "second", n_words, &i);
                 if (!finish) {
-                    finish = !shu_get_int_value(words[i], &second);
+                    finish = !shu_get_int_value("add", "second", words[i], &second);
                 }
             }
             else {
@@ -94,7 +94,7 @@ SH_STATE sh_handle_acc(char **words, int n_words) {
                             numbers_size *= 2;
                             numbers = realloc(numbers, numbers_size * sizeof(int));
                         }
-                        finish = !shu_get_int_value(words[i], &numbers[numbers_index++]);
+                        finish = !shu_get_int_value("acc", "numbers", words[i], &numbers[numbers_index++]);
                         is_assigned_numbers = true;
                         i++;
                     }

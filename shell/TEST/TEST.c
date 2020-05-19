@@ -30,14 +30,16 @@ SH_STATE sh_handle_add(char **words, int n_words) {
 			    finish = !shu_check_noval("add", "first", n_words, &i);
 			    if (!finish) {
 			        is_assigned_first = true;
-			                 
+			        finish = !shu_get_int_value("add", "first", words[i], &first)
+						|| !shu_check_max_int("add", "first", first, 0)
+						|| !shu_check_min_int("add", "first", first, 0);         
 			    }
 			}
-			else if (strcmp(argument, "second") == 0 || (is_alias && strcmp(argument, "s") == 0) {
+			else if (strcmp(argument, "second") == 0 || (is_alias && strcmp(argument, "s") == 0)) {
 			    finish = !shu_check_noval("add", "second", n_words, &i);
 			    if (!finish) {
 			        
-			                 
+			        finish = !shu_get_int_value("add", "second", words[i], &second);         
 			    }
 			}
 			else {
@@ -77,11 +79,27 @@ SH_STATE sh_handle_acc(char **words, int n_words) {
             shu_value_without_argument(words[i]);
         }
         else {
-            if (strcmp(argument, "numbers") == 0 || (is_alias && strcmp(argument, "n") == 0) {
+            if (strcmp(argument, "numbers") == 0 || (is_alias && strcmp(argument, "n") == 0)) {
 			    finish = !shu_check_noval("acc", "numbers", n_words, &i);
 			    if (!finish) {
 			        is_assigned_numbers = true;
-			                 
+			        bool _;
+					while (i < n_words && !finish && shu_extract_argument(words[i], &_) == NULL) {
+					    if (numbers == NULL) {
+					        numbers = malloc(_SH_INIT_BUFFER * sizeof(int));
+					    }
+					    else if (numbers_index == numbers_size) {
+					        numbers_size *= 2;
+					        numbers = realloc(numbers, numbers_size * sizeof(int));
+					    }
+					    finish = !shu_get_int_value(acc, numbers, words[i], &numbers[numbers_index++]);
+					    is_assigned_numbers = true;
+					    i++;
+					}
+					if (i < n_words) {
+					    i--;
+					}
+					finish = !shu_check_noval_array("acc", "numbers", is_assigned_numbers);               
 			    }
 			}
 			else {
@@ -108,12 +126,12 @@ SH_STATE sh_parse_command(char **words, int size) {
     if (size > 0) {
         char *command = words[0];
 
-        if (strcmp(command, add) == 0) {
-		state = sh_handle_add(words, size);
-	}
-	else if (strcmp(command, acc) == 0) {
-		state = sh_handle_add(words, size);
-	}
+        if (strcmp(command, "command_name") == 0) {
+			state = sh_handle_add(words, size);
+		}
+		else if (strcmp(command, "command_name") == 0) {
+			state = sh_handle_add(words, size);
+		}
         else {
             shu_unknown_command(command);
             state = SH_CONTINUE;
