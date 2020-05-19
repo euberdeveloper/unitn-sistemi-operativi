@@ -10,6 +10,9 @@ HEADER_TEMPLATE = './templates/header.template.txt'
 C_TEMPLATE = './templates/c.template.txt'
 SH_PARSE_COMMAND_TEMPLATE = './templates/sh_parse_command.template.txt'
 SH_HANDLE_COMMAND_TEMPLATE = './templates/sh_handle_command.template.txt'
+SH_HANDLE_COMMAND_CONDITION_TEMPLATE = './templates/sh_handle_command_condition.template.txt'
+SH_HANDLE_COMMAND_UNKNOWN_ARGUMENT_TEMPLATE = './templates/sh_handle_command_unknown_argument.template.txt'
+SH_HANDLE_COMMAND_ARRAY_ASSIGNMENT_TEMPLATE = './templates/sh_handle_command_array_assignment.template.txt'
 
 # Arguments
 
@@ -24,11 +27,20 @@ with open(HEADER_TEMPLATE) as header_template_file:
 with open(C_TEMPLATE) as c_template_file:
     c_template = c_template_file.read()
 
-with open(SH_PARSE_COMMAND_TEMPLATE) as sh_parse_command_file:
-    sh_parse_command = sh_parse_command_file.read()
+with open(SH_PARSE_COMMAND_TEMPLATE) as sh_parse_command_template_file:
+    sh_parse_command_template = sh_parse_command_template_file.read()
 
-with open(SH_HANDLE_COMMAND_TEMPLATE) as sh_handle_command_file:
-    sh_handle_command = sh_handle_command_file.read()
+with open(SH_HANDLE_COMMAND_TEMPLATE) as sh_handle_command_template_file:
+    sh_handle_command_template = sh_handle_command_template_file.read()
+
+with open(SH_HANDLE_COMMAND_CONDITION_TEMPLATE) as sh_handle_command_condition_template_file:
+    sh_handle_command_condition_template = sh_handle_command_condition_template_file.read()
+
+with open(SH_HANDLE_COMMAND_UNKNOWN_ARGUMENT_TEMPLATE) as sh_handle_command_unknown_argument_template_file:
+    sh_handle_command_unknown_argument_template = sh_handle_command_unknown_argument_template_file.read()
+
+with open(SH_HANDLE_COMMAND_ARRAY_ASSIGNMENT_TEMPLATE) as sh_handle_command_array_assignment_file:
+    sh_handle_command_array_assignment = sh_handle_command_array_assignment_file.read()
 
 # Read json file
 
@@ -62,6 +74,20 @@ def get_function_params(arguments: dict):
     
     return ', '.join(params)
 
+def get_function_arguments(arguments: dict):
+    args = []
+
+    for argument_name, argument_details in arguments.items():
+        argument_raw_type = argument_details.get('type')
+        argument_type, _ = split_array_argument(argument_raw_type)
+
+        if argument_type == 'array':
+           args.append(f'{argument_name}, {argument_name}_index')
+        else:
+           args.append(f'{argument_name}')
+    
+    return ', '.join(args)
+
 def get_strcmp_condition(first: str, second: str):
     return f'strcmp({first}, {second}) == 0'
 
@@ -80,7 +106,7 @@ Path(OUTPUT_PATH).mkdir(parents=True, exist_ok=True)
 
 # Generate header file
 
-def generate_header_external_function(command_details: dict):
+def generate_header_extern_function(command_details: dict):
     function_name = command_details.get('function')
     arguments = command_details.get('arguments')
     params = get_function_params(arguments)
@@ -88,7 +114,7 @@ def generate_header_external_function(command_details: dict):
     return f'extern SH_STATE {function_name}({params});'
 
 def generate_header_extern_functions(commands: dict):
-    functions = [generate_header_external_function(command_details) for _, command_details in commands.items()]
+    functions = [generate_header_extern_function(command_details) for _, command_details in commands.items()]
     return '\n'.join(functions)
 
 def generate_header_file(commands: dict):
@@ -105,12 +131,79 @@ def generate_c_handle_command_required_declarations(arguments: dict):
     lines = [f'bool is_assigned_{argument_name};' for argument_name, argument_details in arguments.items() if argument_details.get('default') is None]
     return '\n'.join(lines)
 
+def generate_c_handle_command_argument_declaration(argument_name: str, argument_details: dict):
+    argument_raw_type = argument_details.get('type')
+    argument_type, argument_item_type = split_array_argument(argument_raw_type)
+    argument_default = argument_details.get('default')
+
+    if argument_type == 'array':
+        return f'int {argument_name}_size = 0;\nint {argument_name}_index = 0;\n{argument_item_type} *{argument_name} = NULL;'
+    else:
+        default_str = '' if argument_default is None else f'= {argument_default}'
+        return f'{argument_type} {argument_name}{default_str};'
+
+def generate_c_handle_command_arguments_declarations(arguments: dict):
+    lines = [generate_c_handle_command_argument_declaration(argument_name, argument_details) for argument_name, argument_details in arguments.items()]
+    return '\n'.join(lines)
+
+def generate_c_handle_command_arguments_condition(command_name, argument_name, argument_details, *, index):
+    argument_alias = argument_details.get('alias')
+    argument_default = argument_details.get('default')
+    argument_raw_type = argument_details.get('type')
+    argument_type, argument_item_type = split_array_argument(argument_raw_type)
+    
+    
+    condition_construct = 'if' if index == 0 else 'else if'
+    condition_main = f'strcmp(argument, "{argument_name}") == 0'
+    condition_alias = f' || (is_alias && strcmp(argument, "{argument_alias}") == 0' if argument_alias is not None else ''
+    condition = f'{condition_construct} ({condition_main}{condition_alias})'
+
+    check_noval = f'finish = !shu_check_noval("{command_name}", "{argument_name}", n_words, &i);' if argument_type != 'bool' else ''
+
+    assign_is_assigned = f'is_assigned_{argument_name} = true;' if argument_default is None else ''
+
+    return sh_handle_command_condition_template.format(condition=condition, check_noval=check_noval, assign_is_assigned=assign_is_assigned, assign_argument='')
+
+def generate_c_handle_command_arguments_conditions(command_name: str, command_details: dict):
+    arguments = command_details.get('arguments')
+
+    command_conditions_blocks = [generate_c_handle_command_arguments_condition(command_name, argument_name, argument_details, index=index) for index, (argument_name, argument_details) in enumerate(arguments.items())]
+    command_conditions = '\n'.join(command_conditions_blocks)
+    
+    unknown_construct = 'if' if arguments is None else 'else'
+    unknown_argument = sh_handle_command_unknown_argument_template.format(construct=unknown_construct, command_name=command_name)
+
+    return f'{command_conditions}\n{unknown_argument}'
+
+def generate_c_handle_command_required_check(command_name: str, argument_name: str, argument_details: dict):
+    argument_default = argument_details.get('default')
+
+    return (
+        get_conditional('!finish', f'finish = !shu_check_required("{command_name}", "{argument_name}", is_assigned_{argument_name});') 
+        if argument_default is None 
+        else '')
+
+def generate_c_handle_command_required_checks(command_name: str, arguments: dict):
+    blocks = [generate_c_handle_command_required_check(command_name, argument_name, argument_details) for argument_name, argument_details in arguments.items()]
+    return '\n'.join(blocks)
+
+def generate_c_handle_command_command_function(command_details: dict):
+    function_name = command_details.get('function')
+    arguments = command_details.get('arguments')
+    args = get_function_arguments(arguments)
+
+    return f'{function_name}({args});'
+
 def generate_c_handle_command_function(command_name: str, command_details: dict):
     arguments = command_details.get('arguments')
 
-    required_declarations = generate_c_handle_command_required_declarations(arguments)
+    required_declarations = tab(generate_c_handle_command_required_declarations(arguments), 1)
+    arguments_declarations = tab(generate_c_handle_command_arguments_declarations(arguments), 1)
+    arguments_conditions = tab(generate_c_handle_command_arguments_conditions(command_name, command_details), 3)
+    required_check = tab(generate_c_handle_command_required_checks(command_name, arguments), 1)
+    command_function = generate_c_handle_command_command_function(command_details)
 
-    return sh_handle_command.format(command_name = command_name, required_declarations = required_declarations, arguments_declarations = '', arguments_conditions = '', required_check = '', command_function = '')
+    return sh_handle_command_template.format(command_name = command_name, required_declarations = required_declarations, arguments_declarations = arguments_declarations, arguments_conditions = arguments_conditions, required_check = required_check, command_function = command_function)
 
 def generate_c_handle_command_functions(commands: dict):
     functions = [generate_c_handle_command_function(command_name, command_details) for command_name, command_details in commands.items()]
@@ -123,7 +216,7 @@ def generate_c_parse_command_function(commands: dict):
     conditions = [gen_condition(command_name, index) for index, command_name in enumerate(command_names)]
     commands_conditions = tab('\n'.join(conditions), 1)
 
-    return sh_parse_command.format(commands_conditions = commands_conditions)
+    return sh_parse_command_template.format(commands_conditions = commands_conditions)
 
 def generate_c_file(name: str, commands: dict):
     include = f'{name}.h'

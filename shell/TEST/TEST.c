@@ -12,7 +12,8 @@ SH_STATE sh_handle_add(char **words, int n_words) {
 
     bool is_assigned_first;
 
-    
+    int first;
+	int second= 10;
 
     bool is_alias, finish = false;
     char *argument = NULL;
@@ -25,14 +26,32 @@ SH_STATE sh_handle_add(char **words, int n_words) {
             shu_value_without_argument(words[i]);
         }
         else {
-            
+            if (strcmp(argument, "first") == 0) {
+			    finish = !shu_check_noval("add", "first", n_words, &i);
+			    if (!finish) {
+			        is_assigned_first = true;
+			                 
+			    }
+			}
+			else if (strcmp(argument, "second") == 0 || (is_alias && strcmp(argument, "s") == 0) {
+			    finish = !shu_check_noval("add", "second", n_words, &i);
+			    if (!finish) {
+			        
+			                 
+			    }
+			}
+			else {
+			    shu_unknown_argument("add", words[i]);
+			}
         }
     }
 
-    
+    if (!finish) {
+		finish = !shu_check_required("add", "first", is_assigned_first);
+	}
 
     if (!finish) {  
-        state = ;
+        state = add_shit(first, second);
     }
 
     return state;
@@ -43,7 +62,9 @@ SH_STATE sh_handle_acc(char **words, int n_words) {
 
     bool is_assigned_numbers;
 
-    
+    int numbers_size = 0;
+	int numbers_index = 0;
+	int *numbers = NULL;
 
     bool is_alias, finish = false;
     char *argument = NULL;
@@ -56,14 +77,25 @@ SH_STATE sh_handle_acc(char **words, int n_words) {
             shu_value_without_argument(words[i]);
         }
         else {
-            
+            if (strcmp(argument, "numbers") == 0 || (is_alias && strcmp(argument, "n") == 0) {
+			    finish = !shu_check_noval("acc", "numbers", n_words, &i);
+			    if (!finish) {
+			        is_assigned_numbers = true;
+			                 
+			    }
+			}
+			else {
+			    shu_unknown_argument("acc", words[i]);
+			}
         }
     }
 
-    
+    if (!finish) {
+		finish = !shu_check_required("acc", "numbers", is_assigned_numbers);
+	}
 
     if (!finish) {  
-        state = ;
+        state = acc(numbers, numbers_index);
     }
 
     return state;

@@ -23,7 +23,7 @@ SH_STATE sh_handle_{command_name}(char **words, int n_words) {{
     {required_check}
 
     if (!finish) {{  
-        state = {command_function};
+        state = {command_function}
     }}
 
     return state;
