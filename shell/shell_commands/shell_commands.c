@@ -80,7 +80,7 @@ SH_STATE sh_handle_init(char **words, int n_words) {
 			    }
 			}
 			else {
-			    shu_unknown_argument("init", words[i]);
+				shu_unknown_argument("init", words[i]);
 			}
         }
     }
@@ -182,7 +182,7 @@ SH_STATE sh_handle_set(char **words, int n_words) {
 			    }
 			}
 			else {
-			    shu_unknown_argument("set", words[i]);
+				shu_unknown_argument("set", words[i]);
 			}
         }
     }
@@ -272,7 +272,7 @@ SH_STATE sh_handle_restart(char **words, int n_words) {
 			    }
 			}
 			else {
-			    shu_unknown_argument("restart", words[i]);
+				shu_unknown_argument("restart", words[i]);
 			}
         }
     }
@@ -334,7 +334,7 @@ SH_STATE sh_handle_pop(char **words, int n_words) {
 			    }
 			}
 			else {
-			    shu_unknown_argument("pop", words[i]);
+				shu_unknown_argument("pop", words[i]);
 			}
         }
     }
@@ -345,6 +345,70 @@ SH_STATE sh_handle_pop(char **words, int n_words) {
 
     if (!finish) {  
         state = pop(inputs, inputs_index);
+    }
+
+    return state;
+}
+
+SH_STATE sh_handle_stop(char **words, int n_words) {
+    SH_STATE state = SH_CONTINUE;
+
+    
+
+    
+
+    bool is_alias, finish = false;
+    char *argument = NULL;
+    int i;
+
+    for (i = 1; i < n_words && !finish; i++) {
+        argument = shu_extract_argument(words[i], &is_alias);
+
+        if (argument == NULL) {
+            shu_value_without_argument(words[i]);
+        }
+        else {
+            
+			shu_unknown_argument("stop", words[i]);
+        }
+    }
+
+    
+
+    if (!finish) {  
+        state = stop();
+    }
+
+    return state;
+}
+
+SH_STATE sh_handle_quit(char **words, int n_words) {
+    SH_STATE state = SH_CONTINUE;
+
+    
+
+    
+
+    bool is_alias, finish = false;
+    char *argument = NULL;
+    int i;
+
+    for (i = 1; i < n_words && !finish; i++) {
+        argument = shu_extract_argument(words[i], &is_alias);
+
+        if (argument == NULL) {
+            shu_value_without_argument(words[i]);
+        }
+        else {
+            
+			shu_unknown_argument("quit", words[i]);
+        }
+    }
+
+    
+
+    if (!finish) {  
+        state = quit();
     }
 
     return state;
@@ -368,6 +432,12 @@ SH_STATE sh_parse_command(char **words, int size) {
 		}
 		else if (strcmp(command, "pop") == 0) {
 			state = sh_handle_pop(words, size);
+		}
+		else if (strcmp(command, "stop") == 0) {
+			state = sh_handle_stop(words, size);
+		}
+		else if (strcmp(command, "quit") == 0) {
+			state = sh_handle_quit(words, size);
 		}
         else {
             shu_unknown_command(command);

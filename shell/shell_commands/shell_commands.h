@@ -40,6 +40,8 @@ extern SH_STATE init(int p_number, int q_number, char** inputs, int inputs_size,
 extern SH_STATE set(int p_number, int q_number, char** inputs, int inputs_size, bool recursive, bool keep);
 extern SH_STATE restart(int p_number, int q_number, char** inputs, int inputs_size, bool recursive);
 extern SH_STATE pop(char** inputs, int inputs_size);
+extern SH_STATE stop();
+extern SH_STATE quit();
 
 /* FUNCTIONS */
 

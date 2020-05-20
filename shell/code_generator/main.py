@@ -63,6 +63,8 @@ def split_array_argument(argument_type: str):
 def get_function_params(arguments: dict):
     params = []
 
+    arguments = arguments if arguments is not None else {}
+
     for argument_name, argument_details in arguments.items():
         argument_raw_type = argument_details.get('type')
         argument_type, argument_item_type = split_array_argument(argument_raw_type)
@@ -76,6 +78,8 @@ def get_function_params(arguments: dict):
 
 def get_function_arguments(arguments: dict):
     args = []
+
+    arguments = arguments if arguments is not None else {}
 
     for argument_name, argument_details in arguments.items():
         argument_raw_type = argument_details.get('type')
@@ -118,6 +122,7 @@ Path(OUTPUT_PATH).mkdir(parents=True, exist_ok=True)
 def generate_header_extern_function(command_details: dict):
     function_name = command_details.get('function')
     arguments = command_details.get('arguments')
+    arguments = arguments if arguments is not None else {}
     params = get_function_params(arguments)
 
     return f'extern SH_STATE {function_name}({params});'
@@ -205,12 +210,14 @@ def generate_c_handle_command_arguments_condition(command_name, argument_name, a
 
 def generate_c_handle_command_arguments_conditions(command_name: str, command_details: dict):
     arguments = command_details.get('arguments')
+    arguments = arguments if arguments is not None else {}
 
     command_conditions_blocks = [generate_c_handle_command_arguments_condition(command_name, argument_name, argument_details, index=index) for index, (argument_name, argument_details) in enumerate(arguments.items())]
     command_conditions = '\n'.join(command_conditions_blocks)
     
-    unknown_construct = 'if' if arguments is None else 'else'
-    unknown_argument = sh_handle_command_unknown_argument_template.format(construct=unknown_construct, command_name=command_name)
+    unknown_open = 'else {\n\t' if arguments else ''
+    unknown_close = '\n}' if arguments else ''
+    unknown_argument = f'{unknown_open}shu_unknown_argument("{command_name}", words[i]);{unknown_close}'
 
     return f'{command_conditions}\n{unknown_argument}'
 
@@ -230,12 +237,14 @@ def generate_c_handle_command_required_checks(command_name: str, arguments: dict
 def generate_c_handle_command_command_function(command_details: dict):
     function_name = command_details.get('function')
     arguments = command_details.get('arguments')
+    arguments = arguments if arguments is not None else {}
     args = get_function_arguments(arguments)
 
     return f'{function_name}({args});'
 
 def generate_c_handle_command_function(command_name: str, command_details: dict):
     arguments = command_details.get('arguments')
+    arguments = arguments if arguments is not None else {}
 
     required_declarations = tab(generate_c_handle_command_required_declarations(arguments), 1)
     arguments_declarations = tab(generate_c_handle_command_arguments_declarations(arguments), 1)
