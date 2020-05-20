@@ -87,6 +87,9 @@
             }
         }
     },
+    "status": {
+        "function": "status"
+    },
     "stop": {
         "function": "stop"
     },

@@ -24,9 +24,9 @@ char **txt_splitline(char *line, int *size) {
     char *token;
 
     *size = _TXT_INITIAL_BUFFER_SIZE;
-    words = malloc(*size * sizeof(char*));
+    words = (char**) malloc(*size * sizeof(char*));
 
-    if (!words) {
+    if (words == NULL) {
         gn_abort("Error in allocating words", 1);
     }
 
@@ -35,7 +35,7 @@ char **txt_splitline(char *line, int *size) {
 
         if (index >= *size) {
             *size *= 2;
-            words = realloc(words, *size * sizeof(char*));
+            words = (char**) realloc(words, *size * sizeof(char*));
             
             if(!words) {
                 gn_abort("Error in reallocating words", 1);

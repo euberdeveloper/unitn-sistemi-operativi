@@ -38,6 +38,7 @@ SH_STATE sh_handle_init(char **words, int n_words) {
 			    if (!finish) {
 			        is_assigned_p_number = true;
 			        finish = !shu_get_int_value("init", "p_number", words[i], &p_number)
+						|| !shu_check_max_int("init", "p_number", p_number, 100)
 						|| !shu_check_min_int("init", "p_number", p_number, 1);         
 			    }
 			}
@@ -113,7 +114,7 @@ SH_STATE sh_handle_set(char **words, int n_words) {
 	int q_number= 0;
 	int inputs_size = 0;
 	int inputs_index = 0;
-	char* *inputs = NULL;
+	char **inputs = NULL;
 	bool recursive = false;
 	bool keep = false;
 
