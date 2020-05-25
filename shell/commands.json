@@ -2,14 +2,16 @@
     "init": {
         "function": "init",
         "arguments": {
-            "p_number": {
+            "p-number": {
                 "type": "int",
                 "alias": "n",
+                "default": 3,
                 "min": 1
             },
-            "q_number": {
+            "q-number": {
                 "type": "int",
                 "alias": "m",
+                "default": 4,
                 "min": 1
             },
             "inputs": {
@@ -25,13 +27,13 @@
     "set": {
         "function": "set",
         "arguments": {
-            "p_number": {
+            "p-number": {
                 "type": "int",
                 "alias": "n",
                 "default": 0,
                 "min": 1
             },
-            "q_number": {
+            "q-number": {
                 "type": "int",
                 "alias": "m",
                 "default": 0,
@@ -55,13 +57,13 @@
     "restart": {
         "function": "restart",
         "arguments": {
-            "p_number": {
+            "p-number": {
                 "type": "int",
                 "alias": "n",
                 "default": 0,
                 "min": 1
             },
-            "q_number": {
+            "q-number": {
                 "type": "int",
                 "alias": "m",
                 "default": 0,
@@ -86,9 +88,6 @@
                 "alias": "i"
             }
         }
-    },
-    "status": {
-        "function": "status"
     },
     "stop": {
         "function": "stop"

@@ -10,13 +10,11 @@ static const char* _SH_PROMPT_SYMBOL = ">> ";
 SH_STATE sh_handle_init(char **words, int n_words) {
     SH_STATE state = SH_CONTINUE;
 
-    bool is_assigned_p_number = false;
-	bool is_assigned_q_number = false;
-	bool is_assigned_inputs = false;
+    bool is_assigned_inputs = false;
 	bool is_assigned_recursive = false;
 
-    int p_number;
-	int q_number;
+    int p_number= 3;
+	int q_number= 4;
 	int inputs_size = 0;
 	int inputs_index = 0;
 	char* *inputs = NULL;
@@ -33,21 +31,20 @@ SH_STATE sh_handle_init(char **words, int n_words) {
             shu_value_without_argument(words[i]);
         }
         else {
-            if (strcmp(argument, "p_number") == 0 || (is_alias && strcmp(argument, "n") == 0)) {
-			    finish = !shu_check_noval("init", "p_number", n_words, &i);
+            if (strcmp(argument, "p-number") == 0 || (is_alias && strcmp(argument, "n") == 0)) {
+			    finish = !shu_check_noval("init", "p-number", n_words, &i);
 			    if (!finish) {
-			        is_assigned_p_number = true;
-			        finish = !shu_get_int_value("init", "p_number", words[i], &p_number)
-						|| !shu_check_max_int("init", "p_number", p_number, 100)
-						|| !shu_check_min_int("init", "p_number", p_number, 1);         
+			        
+			        finish = !shu_get_int_value("init", "p-number", words[i], &p_number)
+						|| !shu_check_min_int("init", "p-number", p_number, 1);         
 			    }
 			}
-			else if (strcmp(argument, "q_number") == 0 || (is_alias && strcmp(argument, "m") == 0)) {
-			    finish = !shu_check_noval("init", "q_number", n_words, &i);
+			else if (strcmp(argument, "q-number") == 0 || (is_alias && strcmp(argument, "m") == 0)) {
+			    finish = !shu_check_noval("init", "q-number", n_words, &i);
 			    if (!finish) {
-			        is_assigned_q_number = true;
-			        finish = !shu_get_int_value("init", "q_number", words[i], &q_number)
-						|| !shu_check_min_int("init", "q_number", q_number, 1);         
+			        
+			        finish = !shu_get_int_value("init", "q-number", words[i], &q_number)
+						|| !shu_check_min_int("init", "q-number", q_number, 1);         
 			    }
 			}
 			else if (strcmp(argument, "inputs") == 0 || (is_alias && strcmp(argument, "i") == 0)) {
@@ -86,12 +83,8 @@ SH_STATE sh_handle_init(char **words, int n_words) {
         }
     }
 
-    if (!finish) {
-		finish = !shu_check_required("init", "p_number", is_assigned_p_number);
-	}
-	if (!finish) {
-		finish = !shu_check_required("init", "q_number", is_assigned_q_number);
-	}
+    
+	
 	if (!finish) {
 		finish = !shu_check_required("init", "inputs", is_assigned_inputs);
 	}
@@ -114,7 +107,7 @@ SH_STATE sh_handle_set(char **words, int n_words) {
 	int q_number= 0;
 	int inputs_size = 0;
 	int inputs_index = 0;
-	char **inputs = NULL;
+	char* *inputs = NULL;
 	bool recursive = false;
 	bool keep = false;
 
@@ -129,20 +122,20 @@ SH_STATE sh_handle_set(char **words, int n_words) {
             shu_value_without_argument(words[i]);
         }
         else {
-            if (strcmp(argument, "p_number") == 0 || (is_alias && strcmp(argument, "n") == 0)) {
-			    finish = !shu_check_noval("set", "p_number", n_words, &i);
+            if (strcmp(argument, "p-number") == 0 || (is_alias && strcmp(argument, "n") == 0)) {
+			    finish = !shu_check_noval("set", "p-number", n_words, &i);
 			    if (!finish) {
 			        
-			        finish = !shu_get_int_value("set", "p_number", words[i], &p_number)
-						|| !shu_check_min_int("set", "p_number", p_number, 1);         
+			        finish = !shu_get_int_value("set", "p-number", words[i], &p_number)
+						|| !shu_check_min_int("set", "p-number", p_number, 1);         
 			    }
 			}
-			else if (strcmp(argument, "q_number") == 0 || (is_alias && strcmp(argument, "m") == 0)) {
-			    finish = !shu_check_noval("set", "q_number", n_words, &i);
+			else if (strcmp(argument, "q-number") == 0 || (is_alias && strcmp(argument, "m") == 0)) {
+			    finish = !shu_check_noval("set", "q-number", n_words, &i);
 			    if (!finish) {
 			        
-			        finish = !shu_get_int_value("set", "q_number", words[i], &q_number)
-						|| !shu_check_min_int("set", "q_number", q_number, 1);         
+			        finish = !shu_get_int_value("set", "q-number", words[i], &q_number)
+						|| !shu_check_min_int("set", "q-number", q_number, 1);         
 			    }
 			}
 			else if (strcmp(argument, "inputs") == 0 || (is_alias && strcmp(argument, "i") == 0)) {
@@ -226,20 +219,20 @@ SH_STATE sh_handle_restart(char **words, int n_words) {
             shu_value_without_argument(words[i]);
         }
         else {
-            if (strcmp(argument, "p_number") == 0 || (is_alias && strcmp(argument, "n") == 0)) {
-			    finish = !shu_check_noval("restart", "p_number", n_words, &i);
+            if (strcmp(argument, "p-number") == 0 || (is_alias && strcmp(argument, "n") == 0)) {
+			    finish = !shu_check_noval("restart", "p-number", n_words, &i);
 			    if (!finish) {
 			        
-			        finish = !shu_get_int_value("restart", "p_number", words[i], &p_number)
-						|| !shu_check_min_int("restart", "p_number", p_number, 1);         
+			        finish = !shu_get_int_value("restart", "p-number", words[i], &p_number)
+						|| !shu_check_min_int("restart", "p-number", p_number, 1);         
 			    }
 			}
-			else if (strcmp(argument, "q_number") == 0 || (is_alias && strcmp(argument, "m") == 0)) {
-			    finish = !shu_check_noval("restart", "q_number", n_words, &i);
+			else if (strcmp(argument, "q-number") == 0 || (is_alias && strcmp(argument, "m") == 0)) {
+			    finish = !shu_check_noval("restart", "q-number", n_words, &i);
 			    if (!finish) {
 			        
-			        finish = !shu_get_int_value("restart", "q_number", words[i], &q_number)
-						|| !shu_check_min_int("restart", "q_number", q_number, 1);         
+			        finish = !shu_get_int_value("restart", "q-number", words[i], &q_number)
+						|| !shu_check_min_int("restart", "q-number", q_number, 1);         
 			    }
 			}
 			else if (strcmp(argument, "inputs") == 0 || (is_alias && strcmp(argument, "i") == 0)) {
