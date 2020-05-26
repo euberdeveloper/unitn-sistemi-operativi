@@ -13,8 +13,8 @@ SH_STATE sh_handle_init(char **words, int n_words) {
     bool is_assigned_inputs = false;
 	bool is_assigned_recursive = false;
 
-    int p_number= 3;
-	int q_number= 4;
+    int p_number = 3;
+	int q_number = 4;
 	int inputs_size = 0;
 	int inputs_index = 0;
 	char* *inputs = NULL;
@@ -103,8 +103,8 @@ SH_STATE sh_handle_set(char **words, int n_words) {
 	bool is_assigned_recursive = false;
 	bool is_assigned_keep = false;
 
-    int p_number= 0;
-	int q_number= 0;
+    int p_number = 0;
+	int q_number = 0;
 	int inputs_size = 0;
 	int inputs_index = 0;
 	char* *inputs = NULL;
@@ -201,8 +201,8 @@ SH_STATE sh_handle_restart(char **words, int n_words) {
     bool is_assigned_inputs = false;
 	bool is_assigned_recursive = false;
 
-    int p_number= 0;
-	int q_number= 0;
+    int p_number = 0;
+	int q_number = 0;
 	int inputs_size = 0;
 	int inputs_index = 0;
 	char* *inputs = NULL;

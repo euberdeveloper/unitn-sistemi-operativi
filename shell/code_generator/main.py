@@ -158,7 +158,7 @@ def generate_c_handle_command_argument_declaration(argument_name: str, argument_
     elif argument_type == 'bool':
         return f'{argument_type} {purge_name(argument_name)} = false;'
     else:
-        default_str = '' if argument_default is None else f'= {argument_default}'
+        default_str = '' if argument_default is None else f' = {argument_default}'
         return f'{argument_type} {purge_name(argument_name)}{default_str};'
 
 def generate_c_handle_command_arguments_declarations(arguments: dict):

@@ -2,7 +2,7 @@
 
 /* HELPER FUNCTIONS SIGNATURES */
 
-char* _log_bracket_text(char* text);
+static char* _log_bracket_text(char* text);
 
 /* EXPORTED FUNCTIONS */
 
@@ -111,7 +111,7 @@ void log_warning_del_ctx(char *message, char *context) {
 
 /* HELPER FUNCTIONS DEFINITIONS */
 
-char* _log_bracket_text(char* text) {
+static char* _log_bracket_text(char* text) {
     char* result;
     asprintf(&result, "{%s}", text);
     return result;
