@@ -11,7 +11,7 @@
 #include <time.h>
 #include  "R_functions.h"
 
-char* MESSAGE = "3 ciao.txt 23 23 23 23 23 23 come.txt 23 23 23 23 23 23 \\ciao\\come\\va.txt  2147483647 23121223 23 23 23 23";
+char* MESSAGE = "3 ciao.txt 23 23 23 23 23 23 come.txt 23 23 23 23 23 23 \\ciao\\come\\va.txt  2147 2312 23 23 23 23";
 
  
 int main(){

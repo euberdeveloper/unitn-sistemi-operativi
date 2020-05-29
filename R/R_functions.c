@@ -89,24 +89,24 @@ int print_file(DATA_FILE* file, bool case_sensitive, bool percentage){
         printf("--------------------------------------------------\n");
         fflush(stdout);
         if(case_sensitive){
-            printf("Alpha_upper       | %-12d|      %0.2f%s     |\n", file->data_info.alpha_upper,fabs((float) ((float)file->data_info.alpha_over / (float)tot) * 100.0), "%");
+            printf("Alpha_upper       | %-12d|      %-7.2f%s   |\n", file->data_info.alpha_upper,fabs((float) ((float)file->data_info.alpha_over / (float)tot) * 100.0), "%");
             printf("--------------------------------------------------\n");
-            printf("Aplha_over        | %-12d|      %0.2f%s     |\n", file->data_info.alpha_over,fabs((float) ((float)file->data_info.alpha_over / (float)tot) * 100.0), "%");
+            printf("Aplha_over        | %-12d|      %-7.2f%s   |\n", file->data_info.alpha_over,fabs((float) ((float)file->data_info.alpha_over / (float)tot) * 100.0), "%");
             printf("--------------------------------------------------\n");
         } else {
-            printf("Alpha             | %-12d|      %0.2f%s     |\n", file->data_info.alpha_upper + file->data_info.alpha_over, fabs((float) (((float)(file->data_info.alpha_upper + file->data_info.alpha_over)) / (float)tot) * 100.0), "%");
+            printf("Alpha             | %-12d|      %-7.2f%s   |\n", file->data_info.alpha_upper + file->data_info.alpha_over, fabs((float) (((float)(file->data_info.alpha_upper + file->data_info.alpha_over)) / (float)tot) * 100.0), "%");
             printf("--------------------------------------------------\n");
         }
-        printf("Digit             | %-12d|      %0.2f%s     |\n", file->data_info.digit, fabs((float) ((float)file->data_info.digit / (float)tot) * 100.0), "%");
+        printf("Digit             | %-12d|      %-7.2f%s   |\n", file->data_info.digit, fabs((float) ((float)file->data_info.digit / (float)tot) * 100.0), "%");
         printf("--------------------------------------------------\n");
         fflush(stdout);
-        printf("Punct             | %-12d|      %0.2f%s     |\n", file->data_info.punct, fabs((float) ((float)file->data_info.punct / (float)tot) * 100.0), "%");
+        printf("Punct             | %-12d|      %-7.2f%s   |\n", file->data_info.punct, fabs((float) ((float)file->data_info.punct / (float)tot) * 100.0), "%");
         printf("--------------------------------------------------\n");
         fflush(stdout);
-        printf("Space             | %-12d|      %0.2f%s     |\n", file->data_info.space, fabs((float) ((float)file->data_info.space / (float)tot) * 100.0), "%");
+        printf("Space             | %-12d|      %-7.2f%s   |\n", file->data_info.space, fabs((float) ((float)file->data_info.space / (float)tot) * 100.0), "%");
         printf("--------------------------------------------------\n");
         fflush(stdout);
-        printf("Other             | %-12d|      %0.2f%s     |\n", file->data_info.other, fabs((float) ((float)file->data_info.other / (float)tot) * 100.0), "%");
+        printf("Other             | %-12d|      %-7.2f%s   |\n", file->data_info.other, fabs((float) ((float)file->data_info.other / (float)tot) * 100.0), "%");
         printf("--------------------------------------------------\n");
         fflush(stdout);
     } else {
