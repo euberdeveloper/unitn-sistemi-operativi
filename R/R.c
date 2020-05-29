@@ -43,7 +43,7 @@ int main(){
     }
     int fd_fifo;
     fd_fifo = open(fifo, O_RDONLY);
-
+    
     read(fd_fifo, BUFFER_SIZE, 8);
     sscanf(BUFFER_SIZE, "%d", &MSG_SIZE);
     free(BUFFER_SIZE);
