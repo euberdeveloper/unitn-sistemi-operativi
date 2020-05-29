@@ -8,8 +8,6 @@ DATA_FILE* deserialize(char* msg, int* result_size){
     iterator = strtok(msg, SPACE);
     sscanf(iterator ,"%d ", result_size);
     DATA_FILE* FILES = malloc ((*result_size) * (sizeof *FILES));
-    printf("deserialization_here\n");
-    fflush(stdout);
     int j = 0;
     int z = 0;
     for (j = 0; j < (*result_size); j++){
