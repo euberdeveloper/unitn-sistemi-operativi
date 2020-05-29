@@ -51,7 +51,7 @@ DATA_FILE* deserialize(char* msg, int* result_size){
     return FILES;
 }
 
-unsigned long long int total_letter_from_file(DATA_FILE* file){
+int total_letter_from_file(DATA_FILE* file){
     return (file->data_info.alpha_over + file->data_info.alpha_upper + file->data_info.digit + file->data_info.punct + file->data_info.space + file->data_info.other);
 }
 
@@ -118,24 +118,24 @@ int print_file(DATA_FILE* file, bool case_sensitive, bool percentage){
         printf("%-30s |\n", "  Quantity  ");
         printf("--------------------------------------------------\n");
         if(case_sensitive){
-            printf("Alpha_upper       |    %-27d|\n", file->data_info.alpha_upper);
+            printf("Alpha_upper       | %-30d|\n", file->data_info.alpha_upper);
             printf("--------------------------------------------------\n");
-            printf("Aplha_over        |    %-27d|\n", file->data_info.alpha_over);
+            printf("Aplha_over        | %-30d|\n", file->data_info.alpha_over);
             printf("--------------------------------------------------\n");
         } else {
-            printf("Alpha             |    %-27d|\n", file->data_info.alpha_upper + file->data_info.alpha_over);
+            printf("Alpha             | %-30d|\n", file->data_info.alpha_upper + file->data_info.alpha_over);
             printf("--------------------------------------------------\n");
         }
-        printf("Digit             |    %-27d|\n", file->data_info.digit);
+        printf("Digit             | %-30d|\n", file->data_info.digit);
         printf("--------------------------------------------------\n");
         fflush(stdout);
-        printf("Punct             |    %-27d|\n", file->data_info.punct);
+        printf("Punct             | %-30d|\n", file->data_info.punct);
         printf("--------------------------------------------------\n");
         fflush(stdout);
-        printf("Space             |    %-27d|\n", file->data_info.space);
+        printf("Space             | %-30d|\n", file->data_info.space);
         printf("--------------------------------------------------\n");
         fflush(stdout);
-        printf("Other             |    %-27d|\n", file->data_info.other);
+        printf("Other             | %-30d|\n", file->data_info.other);
         printf("--------------------------------------------------\n");
         fflush(stdout);
 
