@@ -2,10 +2,14 @@
 #include <math.h>
 
 DATA_FILE* deserialize(char* msg, int* result_size){
+    printf("deserialization_begin\n");
+    fflush(stdout);
     char* iterator;
     iterator = strtok(msg, SPACE);
     sscanf(iterator ,"%d ", result_size);
     DATA_FILE* FILES = malloc ((*result_size) * (sizeof *FILES));
+    printf("deserialization_here\n");
+    fflush(stdout);
     int j = 0;
     int z = 0;
     for (j = 0; j < (*result_size); j++){
@@ -48,6 +52,8 @@ DATA_FILE* deserialize(char* msg, int* result_size){
             iterator = strtok(NULL, " ");
         }    
     }
+    printf("deserialization ended\n");
+    fflush(stdout);
     return FILES;
 }
 
@@ -165,4 +171,84 @@ int show_files(DATA_FILE* files, int number_of_files, bool case_sensitive, bool 
             }
         }
     }
+    return 0;
+}
+
+char* serialize(DATA_FILE* files, int files_size){
+    int curr_len = snprintf(NULL, 0 , "%d", files_size);
+    char * ret = (char*) malloc(curr_len + 2);
+    snprintf(ret , curr_len + 2, "%d ", files_size);
+    int next_increase;
+    int index;
+    int magic = 1;
+    for (index = 0; index < files_size; index++){
+        
+        next_increase = strlen(files[index].path);
+        curr_len += next_increase;
+        ret = (char*) realloc(ret, curr_len * sizeof(char) + magic);
+        strcat(ret, files[index].path);
+        ret[curr_len + magic] = ' ';
+        magic++;
+
+        next_increase = snprintf(NULL, 0 , "%d", files[index].data_info.alpha_upper);
+        curr_len += next_increase;
+        ret = (char*) realloc(ret, curr_len * sizeof(char) + magic);
+        snprintf(&ret[curr_len - next_increase + magic] , next_increase + magic, "%d", files[index].data_info.alpha_upper);
+        ret[curr_len + magic] = ' ';
+        magic++;
+
+
+        
+       
+        next_increase = snprintf(NULL, 0 , "%d", files[index].data_info.alpha_over);
+        curr_len += next_increase;
+        ret = (char*) realloc(ret, curr_len * sizeof(char) + magic);
+        snprintf(&ret[curr_len - next_increase + magic] , next_increase + magic, "%d", files[index].data_info.alpha_over);
+        ret[curr_len + magic] = ' ';
+        magic++;
+
+
+        next_increase = snprintf(NULL, 0 , "%d", files[index].data_info.digit);
+        curr_len += next_increase;
+        ret = (char*) realloc(ret, curr_len * sizeof(char) + magic);
+        snprintf(&ret[curr_len - next_increase + magic] , next_increase + magic, "%d", files[index].data_info.digit);
+        ret[curr_len + magic] = ' ';
+        magic++;
+
+
+        next_increase = snprintf(NULL, 0 , "%d", files[index].data_info.punct);
+        curr_len += next_increase;
+        ret = (char*) realloc(ret, curr_len * sizeof(char) + magic);
+        snprintf(&ret[curr_len - next_increase + magic] , next_increase + magic, "%d", files[index].data_info.punct);
+        ret[curr_len + magic] = ' ';
+        magic++;
+
+
+        next_increase = snprintf(NULL, 0 , "%d", files[index].data_info.space);
+        curr_len += next_increase;
+        ret = (char*) realloc(ret, curr_len * sizeof(char) + magic);
+        snprintf(&ret[curr_len - next_increase + magic] , next_increase + magic, "%d", files[index].data_info.space);
+        ret[curr_len + magic] = ' ';
+        magic++;
+
+
+        next_increase = snprintf(NULL, 0 , "%d", files[index].data_info.other);
+        curr_len += next_increase;
+        ret = (char*) realloc(ret, curr_len * sizeof(char) + magic);
+        snprintf(&ret[curr_len - next_increase + magic] , next_increase + magic, "%d", files[index].data_info.other);
+        ret[curr_len + magic] = ' ';
+        magic++;
+
+    
+        
+    }
+
+    int ret_len = strlen(ret);
+    char* true_ret = (char*) malloc (ret_len + 9);
+    sprintf(true_ret, "%08d", (int)ret_len);
+    true_ret[8] = ' ';
+    true_ret = (char*) realloc(true_ret, ret_len + 9);
+    strcat(true_ret, ret);
+    free(ret);
+    return true_ret;
 }

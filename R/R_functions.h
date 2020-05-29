@@ -35,6 +35,7 @@ typedef enum{
 static const char* SPACE = " ";
 
 DATA_FILE* deserialize(char* msg, int* result_size);
+char* serialize(DATA_FILE* files, int files_size);
 int total_letter_from_file(DATA_FILE* file);
 int print_file(DATA_FILE* file, bool case_sensitive, bool percentage);
 int show_files(DATA_FILE* files,int number_of_files,  bool case_sensitive, bool percentage, char** files_names, int size_file_names);
