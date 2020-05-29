@@ -1,0 +1,3 @@
+/home/xeno/CLionProjects/Algoritmi/unitn-sistemi-operativi/final/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/xeno/CLionProjects/Algoritmi/unitn-sistemi-operativi/final/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/xeno/CLionProjects/Algoritmi/unitn-sistemi-operativi/final/cmake-build-debug/CMakeFiles/project.dir

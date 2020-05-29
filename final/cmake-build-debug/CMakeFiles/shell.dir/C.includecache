@@ -1,0 +1,14 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/xeno/CLionProjects/Algoritmi/unitn-sistemi-operativi/final/shell.c
+stdio.h
+-
+stdlib.h
+-
+
