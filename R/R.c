@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdbool.h>
 #include <string.h> 
 #include <fcntl.h> 
 #include <sys/stat.h> 
@@ -8,20 +7,7 @@
 #include <sys/types.h>
 #include <errno.h>
 #include <stdlib.h>
-
-typedef struct{
-    int alpha_upper;
-    int alpha_over;
-    int digit;
-    int punct;
-    int space;
-    int other;
-}DATA_INFO;
-
-typedef struct{
-    char* path;
-    DATA_INFO data_info;
-}DATA_FILE;
+#include "R_functions.h"
 
 
 
@@ -33,7 +19,7 @@ int main(){
     int data_file_number;
     
     char* fifo = "/tmp/myfifo";
-    char* BUFFER_SIZE = (char) malloc(8 * sizeof(char));
+    char* BUFFER_SIZE = (char*) malloc(8 * sizeof(char));
 
     if(mkfifo(fifo, 0666) == -1){
         perror("errror in creating the fifo\n");
@@ -44,22 +30,50 @@ int main(){
     int fd_fifo;
     fd_fifo = open(fifo, O_RDONLY);
     
-    read(fd_fifo, BUFFER_SIZE, 8);
+    while(1){
+        if(read(fd_fifo, BUFFER_SIZE, 8) != 8){
+            sleep(20);
+        } else {
+            break;
+        }
+    }
+
+    
     sscanf(BUFFER_SIZE, "%d", &MSG_SIZE);
     free(BUFFER_SIZE);
-
+    printf("mgs size = %d\n", MSG_SIZE);
+    fflush(stdout);
     char* msg = NULL;
     while (msg == NULL){
-        msg = (char) malloc (MSG_SIZE * sizeof(char));
+        msg = (char*) malloc (MSG_SIZE * sizeof(char) + 1);
     }
     //int read_so_far;
-    read(fd_fifo, msg, MSG_SIZE);
+
+    while(1){
+        if(read(fd_fifo, msg, MSG_SIZE) != MSG_SIZE){
+            printf("help!\n");
+            
+        } else {
+            break;
+        }
+    }
+   // printf("%s\n",msg);
+    fflush(stdout);
+    //read(fd_fifo, msg, MSG_SIZE);
     int N_FILES = 0;
     DATA_FILE* FILES = deserialize(msg, &N_FILES);
+    //printf("%s",FILES[0].path);
+    int i;
+    for (i = 0; i < N_FILES; i++){
+        print_file(&FILES[i],true, true);
+        fflush(stdout);
+        //printf("hey");
+    }
     
     //int ret = sscanf(read(8), "%d", &N) -> number of variable readed;    
     // alloc N-DATA_FILE
     // FILL n-DATA_FILE
+    close(fd_fifo);
     return 0;
 }
 
