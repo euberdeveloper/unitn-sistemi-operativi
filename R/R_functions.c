@@ -191,12 +191,17 @@ char* serialize(DATA_FILE* files, int files_size){
     snprintf(ret , curr_len + 1, "%d", files_size);
     int index;
     int current_string_index = strlen(ret);
+    int max_size = current_string_index;
     for (index = 0; index < files_size; index++){
+        
         char* file_index_string = FILE_to_string(files[index]);
         int increment = strlen(file_index_string);
         ret = (char*)realloc(ret, sizeof(char) * (current_string_index + increment + 2));
         strcat(ret, file_index_string);
         current_string_index += increment;
+        
+       
+        
     }
 
     int ret_len = strlen(ret);

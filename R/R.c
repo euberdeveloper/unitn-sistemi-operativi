@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <string.h> 
 #include <fcntl.h> 
@@ -29,7 +30,7 @@ int main(){
     }
     int fd_fifo;
     fd_fifo = open(fifo, O_RDONLY);
-    
+    //F_SETPIPE_SZ();
     while(1){
         if(read(fd_fifo, BUFFER_SIZE, 8) != 8){
             sleep(20);
@@ -51,7 +52,7 @@ int main(){
 
     while(1){
         if(read(fd_fifo, msg, MSG_SIZE) != MSG_SIZE){
-            printf("help!\n");
+            printf("read error!\n");
             
         } else {
             break;
@@ -63,12 +64,14 @@ int main(){
     int N_FILES = 0;
     DATA_FILE* FILES = deserialize(msg, &N_FILES);
     //printf("%s",FILES[0].path);
+    
+    /*
     int i;
     for (i = 0; i < N_FILES; i++){
         print_file(&FILES[i],true, true);
         fflush(stdout);
         //printf("hey");
-    }
+    }*/
     
     //int ret = sscanf(read(8), "%d", &N) -> number of variable readed;    
     // alloc N-DATA_FILE

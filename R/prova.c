@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <string.h> 
 #include <fcntl.h> 
@@ -24,7 +25,7 @@ int main(){
     time_t start_time = time(NULL);
     //printf("%05d\n",2);
 
-    int n = 2000;
+    int n = 26000;//max 26000
     DATA_FILE* FILES = malloc (n * (sizeof *FILES));
     int i = 0;
     for(i = 0; i < n; i++){
@@ -42,13 +43,28 @@ int main(){
     char * myfifo = "/tmp/myfifo";
     int fd = -1;
     do{
-        fd = open(myfifo, O_WRONLY);
+        fd = open(myfifo, O_WRONLY, O_NONBLOCK);
     } while(fd == -1);
-      
+
+    
+    
     char* serialized = serialize(FILES, n);
     //printf("serialized = \n%s\n", serialized);
     int len = strlen(serialized);
+    
+    int c;
+    do{
+        c = fcntl(fd, F_SETPIPE_SZ, len);
+        if (c < 0){
+            printf("size_pipe_error\n");
+        }
+    } while (c < 0);
 
+    if(len < 1024*1024){
+        printf("OK!");
+    } else {
+        printf("NOT OK");
+    }
     int curr_len = snprintf(NULL, 0 , "%d", len);
     char * ret = (char*) malloc(curr_len + 1);
     snprintf(ret , curr_len + 1, "%d ", len);
@@ -56,8 +72,11 @@ int main(){
     
     write(fd, serialized, len);
     printf("msg = %d\n", len);
+    
+    printf("%s\n", serialized);
     time_t end = time(NULL);
-    close(fd);
+    //close(fd);
+    
     printf("Elapsed time = %d\n", (int) (end - start_time));
     return 0;
 }
