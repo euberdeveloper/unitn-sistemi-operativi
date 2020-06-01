@@ -3,9 +3,17 @@
 
 /* IMPORTS */
 
+#define _GNU_SOURCE 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include "../../../libs/general/general.h"
+
+/* EXTERNS */
+
+extern int analyzer_pipe[2];
+extern int reporter_pipe[2];
 
 /* FUNCTIONS */
 
@@ -15,6 +23,7 @@ SH_STATE restart(int p_number, int q_number, char** inputs, int inputs_size, boo
 SH_STATE pop(char** inputs, int inputs_size);
 SH_STATE status();
 SH_STATE stop();
+SH_STATE show(bool sensitive, bool percentage, bool realtime, bool detailed, char** files, int files_size);
 SH_STATE quit();
 
 #endif

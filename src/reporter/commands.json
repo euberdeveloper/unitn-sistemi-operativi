@@ -1,0 +1,31 @@
+{
+    "show": {
+        "function": "show",
+        "arguments": {
+            "sensitive": {
+                "type": "bool",
+                "alias": "s"
+            },
+            "percentage": {
+                "type": "bool",
+                "alias": "p"
+            },
+            "realtime": {
+                "type": "bool",
+                "alias": "r"
+            },
+            "detailed": {
+                "type": "bool",
+                "alias": "d"
+            },
+            "files": {
+                "type": "array<char*>",
+                "alias": "f",
+                "default": "NULL"
+            }
+        }
+    },
+    "quit": {
+        "function": "quit"
+    }
+}
