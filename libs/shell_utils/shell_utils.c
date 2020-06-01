@@ -1,5 +1,7 @@
 #include "shell_utils.h"
 
+/* EXPORTED FUNCTIONS */
+
 void shu_unknown_command(char* command) {
     char *message;
     asprintf(&message, "unknown command %s", command);
@@ -150,23 +152,207 @@ bool shu_check_max_double(const char* command, const char* argument, double valu
 }
 
 bool shu_get_int_value(const char *command, const char *argument, char* str_value, int* value) {
-    *value = atoi(str_value);
-    return true;
+    bool result = true;
+    int length = strlen(str_value);
+
+    *value = 0;
+
+    if (length == 0 || (length == 1 && !isdigit(str_value[0]))) {
+        result = false;
+    }
+    else {
+        bool minus = false;
+        int start = 0, i;
+
+        if (str_value[0] == '-') {
+            minus = true;
+            start++;
+        }
+        
+        for (i = start; i < length && result; i++) {
+            if (!isdigit(str_value[i])) {
+                result = false;
+            }
+            else {
+                *value *= 10;
+                *value += (str_value[i] - '0');
+            }
+        }
+
+        if (minus) {
+            *value = -*value;
+        }
+    }
+
+    if (!result) {
+        char *message;
+        asprintf(&message, "%s: argument %s is %s but must be a valid int value", command, argument, str_value);
+        log_error_del_ctx(message, strdup("SHELL"));
+    }
+
+    return result;
 }
 
 bool shu_get_long_value(const char *command, const char *argument, char* str_value, long* value) {
-    *value = atol(str_value);
-    return true;
+    bool result = true;
+    int length = strlen(str_value);
+
+    *value = 0;
+
+    if (length == 0 || (length == 1 && !isdigit(str_value[0]))) {
+        result = false;
+    }
+    else {
+        bool minus = false;
+        int start = 0, i;
+
+        if (str_value[0] == '-') {
+            minus = true;
+            start++;
+        }
+        
+        for (i = start; i < length && result; i++) {
+            if (!isdigit(str_value[i])) {
+                result = false;
+            }
+            else {
+                *value *= 10;
+                *value += (str_value[i] - '0');
+            }
+        }
+
+        if (minus) {
+            *value = -*value;
+        }
+    }
+
+    if (!result) {
+        char *message;
+        asprintf(&message, "%s: argument %s is %s but must be a valid long value", command, argument, str_value);
+        log_error_del_ctx(message, strdup("SHELL"));
+    }
+
+    return result;
 }
 
 bool shu_get_float_value(const char *command, const char *argument, char* str_value, float* value) {
-    *value = (float) atof(str_value);
-    return true;
+    bool result = true;
+    int length = strlen(str_value);
+
+    *value = 0;
+
+    if (length == 0 || (length == 1 && !isdigit(str_value[0]))) {
+        result = false;
+    }
+    else {
+        bool minus = false, point = false;
+        int start = 0, i;
+        float decimal_part = 0;
+
+        if (str_value[0] == '-') {
+            minus = true;
+            start++;
+        }
+        
+        for (i = start; i < length && !point && result; i++) {
+            if (str_value[i] == '.') {
+                point = true;
+            }
+            else if (!isdigit(str_value[i])) {
+                result = false;
+            }
+            else {
+                *value *= 10;
+                *value += (str_value[i] - '0');
+            }
+        }
+
+        start = i;
+
+        for (i = length - 1; i >= start && result; i--) {
+            if (!isdigit(str_value[i])) {
+                result = false;
+            }
+            else {
+                decimal_part += (str_value[i] - '0');
+                decimal_part /= 10;
+            }
+        }
+
+        *value += decimal_part;
+
+        if (minus) {
+            *value = -*value;
+        }
+    }
+
+    if (!result) {
+        char *message;
+        asprintf(&message, "%s: argument %s is %s but must be a valid float value", command, argument, str_value);
+        log_error_del_ctx(message, strdup("SHELL"));
+    }
+
+    return result;
 }
 
 bool shu_get_double_value(const char *command, const char *argument, char* str_value, double* value) {
-    *value = atof(str_value);
-    return true;
+    bool result = true;
+    int length = strlen(str_value);
+
+    *value = 0;
+
+    if (length == 0 || (length == 1 && !isdigit(str_value[0]))) {
+        result = false;
+    }
+    else {
+        bool minus = false, point = false;
+        int start = 0, i;
+        double decimal_part = 0;
+
+        if (str_value[0] == '-') {
+            minus = true;
+            start++;
+        }
+        
+        for (i = start; i < length && !point && result; i++) {
+            if (str_value[i] == '.') {
+                point = true;
+            }
+            else if (!isdigit(str_value[i])) {
+                result = false;
+            }
+            else {
+                *value *= 10;
+                *value += (str_value[i] - '0');
+            }
+        }
+
+        start = i;
+
+        for (i = length - 1; i >= start && result; i--) {
+            if (!isdigit(str_value[i])) {
+                result = false;
+            }
+            else {
+                decimal_part += (str_value[i] - '0');
+                decimal_part /= 10;
+            }
+        }
+
+        *value += decimal_part;
+
+        if (minus) {
+            *value = -*value;
+        }
+    }
+
+    if (!result) {
+        char *message;
+        asprintf(&message, "%s: argument %s is %s but must be a valid double value", command, argument, str_value);
+        log_error_del_ctx(message, strdup("SHELL"));
+    }
+
+    return result;
 }
 
 bool shu_get_char_value(const char *command, const char *argument, char* str_value, char* value) {

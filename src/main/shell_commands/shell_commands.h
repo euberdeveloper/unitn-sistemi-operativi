@@ -3,6 +3,7 @@
 
 /* IMPORTS */
 
+#include <string.h>
 #include "../../../libs/general/general.h"
 #include "../../../libs/text/text.h"
 
@@ -45,6 +46,8 @@ SH_STATE sh_handle_acc(char** words, int n_words);
 SH_STATE sh_parse_command(char** words, int n_words);
 void sh_loop();
 
-char* last_command;
+/* VARIABLES */
+
+char* sh_last_command;
 
 #endif

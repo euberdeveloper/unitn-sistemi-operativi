@@ -573,14 +573,13 @@ void sh_loop() {
     int n_words;
     char *command, **words;
 
-	last_command = strdup("");
+    sh_last_command = strdup("");
 
     while (state != SH_EXIT) {
         printf("%s", _SH_PROMPT_SYMBOL);
         command = txt_readline();
-		free(last_command);
-		last_command = strdup(command);
-
+        free(sh_last_command);
+        sh_last_command = strdup(command);
         words = txt_splitline(command, &n_words);
         state = sh_parse_command(words, n_words);
 
