@@ -28,7 +28,7 @@ DATA_FILE* deserialize(char* msg, int* result_size){
                     break;
                 }
                 case 2:{
-                    sscanf(iterator, "%d", &FILES[j].data_info.alpha_over);
+                    sscanf(iterator, "%d", &FILES[j].data_info.alpha_lower);
                     break;
                 }
                 case 3:{
@@ -57,7 +57,7 @@ DATA_FILE* deserialize(char* msg, int* result_size){
 }
 
 int total_letter_from_file(DATA_FILE* file){
-    return (file->data_info.alpha_over + file->data_info.alpha_upper + file->data_info.digit + file->data_info.punct + file->data_info.space + file->data_info.other);
+    return (file->data_info.alpha_lower + file->data_info.alpha_upper + file->data_info.digit + file->data_info.punct + file->data_info.space + file->data_info.other);
 }
 
 char* base_name(const char* path){
@@ -65,7 +65,7 @@ char* base_name(const char* path){
     int lim_sx;
     int i;
     for (i = lim_dx; i > 0; i--){
-        if (path[i - 1] == '\\'){
+        if (path[i - 1] == '/'){//check
             lim_sx = i;
             break;
         }
@@ -94,12 +94,12 @@ int print_file(DATA_FILE* file, bool case_sensitive, bool percentage){
         printf("--------------------------------------------------\n");
         fflush(stdout);
         if(case_sensitive){
-            printf("Alpha_upper       | %-12d|      %-7.2f%s   |\n", file->data_info.alpha_upper,fabs((float) ((float)file->data_info.alpha_over / (float)tot) * 100.0), "%");
+            printf("Alpha_upper       | %-12d|      %-7.2f%s   |\n", file->data_info.alpha_upper,fabs((float) ((float)file->data_info.alpha_lower / (float)tot) * 100.0), "%");
             printf("--------------------------------------------------\n");
-            printf("Aplha_over        | %-12d|      %-7.2f%s   |\n", file->data_info.alpha_over,fabs((float) ((float)file->data_info.alpha_over / (float)tot) * 100.0), "%");
+            printf("Aplha_over        | %-12d|      %-7.2f%s   |\n", file->data_info.alpha_lower,fabs((float) ((float)file->data_info.alpha_lower / (float)tot) * 100.0), "%");
             printf("--------------------------------------------------\n");
         } else {
-            printf("Alpha             | %-12d|      %-7.2f%s   |\n", file->data_info.alpha_upper + file->data_info.alpha_over, fabs((float) (((float)(file->data_info.alpha_upper + file->data_info.alpha_over)) / (float)tot) * 100.0), "%");
+            printf("Alpha             | %-12d|      %-7.2f%s   |\n", file->data_info.alpha_upper + file->data_info.alpha_lower, fabs((float) (((float)(file->data_info.alpha_upper + file->data_info.alpha_lower)) / (float)tot) * 100.0), "%");
             printf("--------------------------------------------------\n");
         }
         printf("Digit             | %-12d|      %-7.2f%s   |\n", file->data_info.digit, fabs((float) ((float)file->data_info.digit / (float)tot) * 100.0), "%");
@@ -125,10 +125,10 @@ int print_file(DATA_FILE* file, bool case_sensitive, bool percentage){
         if(case_sensitive){
             printf("Alpha_upper       | %-30d|\n", file->data_info.alpha_upper);
             printf("--------------------------------------------------\n");
-            printf("Aplha_over        | %-30d|\n", file->data_info.alpha_over);
+            printf("Aplha_over        | %-30d|\n", file->data_info.alpha_lower);
             printf("--------------------------------------------------\n");
         } else {
-            printf("Alpha             | %-30d|\n", file->data_info.alpha_upper + file->data_info.alpha_over);
+            printf("Alpha             | %-30d|\n", file->data_info.alpha_upper + file->data_info.alpha_lower);
             printf("--------------------------------------------------\n");
         }
         printf("Digit             | %-30d|\n", file->data_info.digit);
@@ -173,16 +173,13 @@ int show_files(DATA_FILE* files, int number_of_files, bool case_sensitive, bool 
     return 0;
 }
 
-
 char* FILE_to_string(const DATA_FILE f){
     size_t len = 0;
-    len = snprintf (NULL, 0, " %s %d %d %d %d %d %d", f.path, f.data_info.alpha_upper, f.data_info.alpha_over, f.data_info.digit, f.data_info.punct, f.data_info.space, f.data_info.other);
+    len = snprintf (NULL, 0, " %s %d %d %d %d %d %d", f.path, f.data_info.alpha_upper, f.data_info.alpha_lower, f.data_info.digit, f.data_info.punct, f.data_info.space, f.data_info.other);
     char *ret = calloc (1, sizeof *ret * len + 1);
-    snprintf (ret, len + 1, " %s %d %d %d %d %d %d", f.path, f.data_info.alpha_upper, f.data_info.alpha_over, f.data_info.digit, f.data_info.punct, f.data_info.space, f.data_info.other);
+    snprintf (ret, len + 1, " %s %d %d %d %d %d %d", f.path, f.data_info.alpha_upper, f.data_info.alpha_lower, f.data_info.digit, f.data_info.punct, f.data_info.space, f.data_info.other);
     return ret;
-
 }
-
 
 char* serialize(DATA_FILE* files, int files_size){
     printf("Serialization...");
@@ -193,15 +190,14 @@ char* serialize(DATA_FILE* files, int files_size){
     int current_string_index = strlen(ret);
     int max_size = current_string_index;
     for (index = 0; index < files_size; index++){
-        
+        //2 for
+        //1 per len
+        //1 per strcat
         char* file_index_string = FILE_to_string(files[index]);
         int increment = strlen(file_index_string);
         ret = (char*)realloc(ret, sizeof(char) * (current_string_index + increment + 2));
         strcat(ret, file_index_string);
         current_string_index += increment;
-        
-       
-        
     }
 
     int ret_len = strlen(ret);
@@ -218,4 +214,93 @@ char* serialize(DATA_FILE* files, int files_size){
     return true_ret;
 }
 
+bool ends_with_txt(char* str){
+    return (strcmp(&str[strlen(str) - 4], TXT) == 0);
+}
 
+void init_zero(DATA_FILE* file){
+    file->data_info.alpha_lower = 0;
+    file->data_info.alpha_upper = 0;
+    file->data_info.digit = 0;
+    file->data_info.other = 0;
+    file->data_info.punct = 0;
+    file->data_info.space = 0;
+}
+
+void visit_recursive(char *name, int mode, DATA_FILE* files, int* counter){
+    linux_dirent *current_dir;
+    int nread;
+    int bpos;
+    int fd;
+    int fd_2;
+    char buf[BUF_SIZE];
+    bool is_dir = true;
+    fd = open(name, O_RDONLY | O_DIRECTORY);
+    if (fd == -1){
+        printf("'%s' is not a directory\n", name);
+        return;
+    }
+    while (is_dir){   
+        nread = syscall(SYS_getdents, fd, buf, BUF_SIZE);
+        if (nread == 0){
+            is_dir = false;
+        }
+        for (bpos = 0; bpos < nread;){
+            current_dir = (linux_dirent *)(buf + bpos);
+            if (strcmp(current_dir->d_name, ".") != 0 && strcmp(current_dir->d_name, "..") != 0){
+                char* path = (char*) malloc (sizeof(char) * PATH_MAX);
+                strcat(path,name); 
+                strcat(path,"/"); 
+                strcat(path,current_dir->d_name);
+                fd_2 = open(path, O_RDONLY | O_DIRECTORY);
+                if (fd_2 != -1){   
+                    close(fd_2);
+                    visit_recursive(path,mode,files,counter);
+                }
+                if (ends_with_txt(path)){
+                    if (mode == WRITE_MODE){
+                        files[*counter].path = (char*) malloc (sizeof(char) * (int)strlen(path) + 1);
+                        strcat(files[*counter].path, path);
+                        init_zero(&files[*counter]);
+                        //*counter++;
+                    }
+                    *counter = *counter + 1;
+                    //printf("test = %d\n", *counter);
+                }
+            }
+            bpos += current_dir->d_reclen;
+        }
+    }
+    return;
+}
+
+DATA_FILE* get_files(char** input, int input_size, int* files_size){
+    int to_alloc = 0;
+    int i;
+    DATA_FILE* ret_files;
+    for (i = 0; i < input_size; i++){
+        if ( ends_with_txt(input[i])){
+            to_alloc++;
+        } else {
+            if (open(input[i],O_RDONLY | O_DIRECTORY) != 1){
+                visit_recursive(input[i],0,NULL,&to_alloc);
+            }
+        }
+    }
+    ret_files = (DATA_FILE*) malloc (sizeof(*ret_files) * to_alloc);
+    *files_size = to_alloc;
+    int index = 0;
+    for (i = 0; i < input_size; i++){
+        if (ends_with_txt(input[i])){
+            ret_files[index].path = (char*) malloc (sizeof(char) * (int)strlen(input[i]) + 1);
+            strcat(ret_files[index].path, input[i]);
+            init_zero(&ret_files[index]);
+            index++;
+        } else {
+            if (open(input[i], O_RDONLY | O_DIRECTORY) != -1){
+                visit_recursive(input[i], WRITE_MODE, ret_files, &index);
+            }
+        }
+    }
+    return ret_files;
+}

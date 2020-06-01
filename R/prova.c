@@ -5,7 +5,7 @@
 #include <sys/stat.h> 
 #include <sys/types.h> 
 #include <unistd.h> 
-#include <sys/types.h>
+
 #include <errno.h>
 #include <stdlib.h>
 #include <time.h>
@@ -30,7 +30,7 @@ int main(){
     int i = 0;
     for(i = 0; i < n; i++){
         FILES[i].path = "\\ciao";
-        FILES[i].data_info.alpha_over = i;
+        FILES[i].data_info.alpha_lower = i;
         FILES[i].data_info.alpha_upper = i;
         FILES[i].data_info.digit = i;
         FILES[i].data_info.space = i;
@@ -114,12 +114,12 @@ char* old_serialize(DATA_FILE* files, int files_size){
 
         
        
-        next_increase = snprintf(NULL, 0 , "%d", files[index].data_info.alpha_over);
+        next_increase = snprintf(NULL, 0 , "%d", files[index].data_info.alpha_lower);
         curr_len += next_increase;
         do{
             ret = (char*) realloc(ret, curr_len * sizeof(char) + magic);    
         }while(ret == NULL);
-        snprintf(&ret[curr_len - next_increase + magic] , next_increase + magic, "%d", files[index].data_info.alpha_over);
+        snprintf(&ret[curr_len - next_increase + magic] , next_increase + magic, "%d", files[index].data_info.alpha_lower);
         ret[curr_len + magic] = ' ';
         magic++;
 
