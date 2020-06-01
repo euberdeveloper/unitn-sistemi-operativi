@@ -1,0 +1,15 @@
+SH_STATE sh_parse_command(char **words, int size) {{
+    SH_STATE state = SH_CONTINUE;
+
+    if (size > 0) {{
+        char *command = words[0];
+
+        {commands_conditions}
+        else {{
+            shu_unknown_command(command);
+            state = SH_CONTINUE;
+        }}
+    }}
+
+    return state;
+}}
