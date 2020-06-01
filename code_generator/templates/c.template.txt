@@ -1,0 +1,29 @@
+#include "{include}"
+
+/* HELPER CONSTANTS */
+
+static const int _SH_INIT_BUFFER = 23;
+static const char* _SH_PROMPT_SYMBOL = "{prompt_symbol}";
+
+/* EXPORTED FUNCTIONS */
+
+{handle_command_functions}
+
+{parse_command_function}
+
+void sh_loop() {{
+    SH_STATE state = SH_CONTINUE;
+
+    int n_words;
+    char *command, **words;
+
+    while (state != SH_EXIT) {{
+        printf("%s", _SH_PROMPT_SYMBOL);
+        command = txt_readline();
+        words = txt_splitline(command, &n_words);
+        state = sh_parse_command(words, n_words);
+
+        free(command);
+        txt_free_string_array(words, n_words);
+    }}
+}}

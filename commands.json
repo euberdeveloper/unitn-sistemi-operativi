@@ -1,0 +1,101 @@
+{
+    "init": {
+        "function": "init",
+        "arguments": {
+            "p-number": {
+                "type": "int",
+                "alias": "n",
+                "default": 3,
+                "min": 1
+            },
+            "q-number": {
+                "type": "int",
+                "alias": "m",
+                "default": 4,
+                "min": 1
+            },
+            "inputs": {
+                "type": "array<char*>",
+                "alias": "i"
+            },
+            "recursive": {
+                "type": "bool",
+                "alias": "r"
+            }
+        }
+    },
+    "set": {
+        "function": "set",
+        "arguments": {
+            "p-number": {
+                "type": "int",
+                "alias": "n",
+                "default": 0,
+                "min": 1
+            },
+            "q-number": {
+                "type": "int",
+                "alias": "m",
+                "default": 0,
+                "min": 1
+            },
+            "inputs": {
+                "type": "array<char*>",
+                "alias": "i",
+                "default": null
+            },
+            "recursive": {
+                "type": "bool",
+                "alias": "r"
+            },
+            "keep": {
+                "type": "bool",
+                "alias": "k"
+            }
+        }
+    },
+    "restart": {
+        "function": "restart",
+        "arguments": {
+            "p-number": {
+                "type": "int",
+                "alias": "n",
+                "default": 0,
+                "min": 1
+            },
+            "q-number": {
+                "type": "int",
+                "alias": "m",
+                "default": 0,
+                "min": 1
+            },
+            "inputs": {
+                "type": "array<char*>",
+                "alias": "i",
+                "default": null
+            },
+            "recursive": {
+                "type": "bool",
+                "alias": "r"
+            }
+        }
+    },
+    "pop": {
+        "function": "pop",
+        "arguments": {
+            "inputs": {
+                "type": "array<char*>",
+                "alias": "i"
+            }
+        }
+    },
+    "status": {
+        "function": "status"
+    },
+    "stop": {
+        "function": "stop"
+    },
+    "quit": {
+        "function": "quit"
+    }
+}
