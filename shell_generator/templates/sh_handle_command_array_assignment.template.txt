@@ -8,10 +8,10 @@ while (i < n_words && !finish && shu_extract_argument(words[i], &_) == NULL) {{
         {argument_name} = realloc({argument_name}, {argument_name}_size * sizeof({argument_item_type}));
     }}
     {assignment}
-    is_assigned_{argument_name} = true;
+    {assignment_required}
     i++;
 }}
 if (i < n_words) {{
     i--;
 }}
-finish = !shu_check_noval_array("{command_name}", "{argument_name}", is_assigned_{argument_name});      
+{last_check} 

@@ -3,15 +3,8 @@
 
 /* IMPORTS */
 
-#include "../general/general.h"
-#include "../text/text.h"
-
-/* ENUMS */
-
-typedef enum {{
-    SH_CONTINUE,
-    SH_EXIT
-}} SH_STATE;
+#include "../../../libs/general/general.h"
+#include "../../../libs/text/text.h"
 
 /* EXTERNS */
 
@@ -36,7 +29,13 @@ extern bool shu_get_double_value(const char* command, const char* argument, char
 extern bool shu_get_char_value(const char* command, const char* argument, char* str_value, char* value);
 extern char* shu_extract_argument(char *word, bool* is_alias);
 
-{extern_functions}
+extern SH_STATE init(int p_number, int q_number, char** inputs, int inputs_size, bool recursive);
+extern SH_STATE set(int p_number, int q_number, char** inputs, int inputs_size, bool recursive, bool keep);
+extern SH_STATE restart(int p_number, int q_number, char** inputs, int inputs_size, bool recursive);
+extern SH_STATE pop(char** inputs, int inputs_size);
+extern SH_STATE status();
+extern SH_STATE stop();
+extern SH_STATE quit();
 
 /* FUNCTIONS */
 

@@ -1,18 +1,21 @@
 #!/usr/bin/python
 
 import sys
+import os
 import json
 from pathlib import Path
 
 # Template files
 
-HEADER_TEMPLATE = './templates/header.template.txt'
-C_TEMPLATE = './templates/c.template.txt'
-SH_PARSE_COMMAND_TEMPLATE = './templates/sh_parse_command.template.txt'
-SH_HANDLE_COMMAND_TEMPLATE = './templates/sh_handle_command.template.txt'
-SH_HANDLE_COMMAND_CONDITION_TEMPLATE = './templates/sh_handle_command_condition.template.txt'
-SH_HANDLE_COMMAND_UNKNOWN_ARGUMENT_TEMPLATE = './templates/sh_handle_command_unknown_argument.template.txt'
-SH_HANDLE_COMMAND_ARRAY_ASSIGNMENT_TEMPLATE = './templates/sh_handle_command_array_assignment.template.txt'
+__dirname = os.path.dirname(os.path.realpath(__file__))
+
+HEADER_TEMPLATE = f'{__dirname}/templates/header.template.txt'
+C_TEMPLATE = f'{__dirname}/templates/c.template.txt'
+SH_PARSE_COMMAND_TEMPLATE = f'{__dirname}/templates/sh_parse_command.template.txt'
+SH_HANDLE_COMMAND_TEMPLATE = f'{__dirname}/templates/sh_handle_command.template.txt'
+SH_HANDLE_COMMAND_CONDITION_TEMPLATE = f'{__dirname}/templates/sh_handle_command_condition.template.txt'
+SH_HANDLE_COMMAND_UNKNOWN_ARGUMENT_TEMPLATE = f'{__dirname}/templates/sh_handle_command_unknown_argument.template.txt'
+SH_HANDLE_COMMAND_ARRAY_ASSIGNMENT_TEMPLATE = f'{__dirname}/templates/sh_handle_command_array_assignment.template.txt'
 
 # Arguments
 
@@ -145,7 +148,7 @@ with open(h_output, 'w') as h_output_file:
 # Generate c file
 
 def generate_c_handle_command_required_declarations(arguments: dict):
-    lines = [f'bool is_assigned_{purge_name(argument_name)} = false;' for argument_name, argument_details in arguments.items() if argument_details.get('default') is None or argument_details.get('type') == 'bool']
+    lines = [f'bool is_assigned_{purge_name(argument_name)} = false;' for argument_name, argument_details in arguments.items() if argument_details.get('default') is None and argument_details.get('type') != 'bool']
     return '\n'.join(lines)
 
 def generate_c_handle_command_argument_declaration(argument_name: str, argument_details: dict):
@@ -165,21 +168,25 @@ def generate_c_handle_command_arguments_declarations(arguments: dict):
     lines = [generate_c_handle_command_argument_declaration(argument_name, argument_details) for argument_name, argument_details in arguments.items()]
     return '\n'.join(lines)
 
-def generate_c_handle_command_arguments_condition_assign_argument_array(command_name: str, argument_name: str, argument_item_type: str):
+def generate_c_handle_command_arguments_condition_assign_argument_array(command_name: str, argument_name: str, argument_item_type: str, argument_default: str):
     if argument_item_type == 'char*':
         assignment = f'{purge_name(argument_name)}[{purge_name(argument_name)}_index++] = strdup(words[i]);'
     else:
         assignment = f'finish = !shu_get_{argument_item_type}_value("{command_name}", "{argument_name}", words[i], &{purge_name(argument_name)}[{purge_name(argument_name)}_index++]);'
 
-    return sh_handle_command_array_assignment.format(command_name=command_name, argument_name=argument_name, argument_item_type=argument_item_type, assignment=assignment)
+    assignment_required = f'is_assigned_{argument_name} = true;' if argument_default is None else ''
+    last_check = f'finish = !shu_check_noval_array("{command_name}", "{argument_name}", is_assigned_{argument_name});' if argument_default is None else '' 
+
+    return sh_handle_command_array_assignment.format(argument_name=argument_name, argument_item_type=argument_item_type, assignment=assignment, assignment_required=assignment_required, last_check=last_check)
 
 def generate_c_handle_command_arguments_condition_assign_argument(command_name: str, argument_name: str, argument_details: dict):
     argument_raw_type = argument_details.get('type')
     argument_type, argument_item_type = split_array_argument(argument_raw_type)
     argument_max, argument_min = argument_details.get('max'), argument_details.get('min')
+    argument_default = argument_details.get('default')
 
     if argument_type == 'array':
-        return generate_c_handle_command_arguments_condition_assign_argument_array(command_name, argument_name, argument_item_type)
+        return generate_c_handle_command_arguments_condition_assign_argument_array(command_name, argument_name, argument_item_type, argument_default)
     elif argument_type == 'bool':
         return f'{purge_name(argument_name)} = true;'
     elif argument_type == 'char*':

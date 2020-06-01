@@ -11,7 +11,6 @@ SH_STATE sh_handle_init(char **words, int n_words) {
     SH_STATE state = SH_CONTINUE;
 
     bool is_assigned_inputs = false;
-	bool is_assigned_recursive = false;
 
     int p_number = 3;
 	int q_number = 4;
@@ -67,7 +66,7 @@ SH_STATE sh_handle_init(char **words, int n_words) {
 					if (i < n_words) {
 					    i--;
 					}
-					finish = !shu_check_noval_array("init", "inputs", is_assigned_inputs);               
+					finish = !shu_check_noval_array("init", "inputs", is_assigned_inputs);          
 			    }
 			}
 			else if (strcmp(argument, "recursive") == 0 || (is_alias && strcmp(argument, "r") == 0)) {
@@ -99,9 +98,7 @@ SH_STATE sh_handle_init(char **words, int n_words) {
 SH_STATE sh_handle_set(char **words, int n_words) {
     SH_STATE state = SH_CONTINUE;
 
-    bool is_assigned_inputs = false;
-	bool is_assigned_recursive = false;
-	bool is_assigned_keep = false;
+    
 
     int p_number = 0;
 	int q_number = 0;
@@ -152,13 +149,13 @@ SH_STATE sh_handle_set(char **words, int n_words) {
 					        inputs = realloc(inputs, inputs_size * sizeof(char*));
 					    }
 					    inputs[inputs_index++] = strdup(words[i]);
-					    is_assigned_inputs = true;
+					    
 					    i++;
 					}
 					if (i < n_words) {
 					    i--;
 					}
-					finish = !shu_check_noval_array("set", "inputs", is_assigned_inputs);               
+					          
 			    }
 			}
 			else if (strcmp(argument, "recursive") == 0 || (is_alias && strcmp(argument, "r") == 0)) {
@@ -183,9 +180,7 @@ SH_STATE sh_handle_set(char **words, int n_words) {
 
     
 	
-	if (!finish) {
-		finish = !shu_check_required("set", "inputs", is_assigned_inputs);
-	}
+	
 	
 
     if (!finish) {  
@@ -199,7 +194,6 @@ SH_STATE sh_handle_restart(char **words, int n_words) {
     SH_STATE state = SH_CONTINUE;
 
     bool is_assigned_inputs = false;
-	bool is_assigned_recursive = false;
 
     int p_number = 0;
 	int q_number = 0;
@@ -255,7 +249,7 @@ SH_STATE sh_handle_restart(char **words, int n_words) {
 					if (i < n_words) {
 					    i--;
 					}
-					finish = !shu_check_noval_array("restart", "inputs", is_assigned_inputs);               
+					finish = !shu_check_noval_array("restart", "inputs", is_assigned_inputs);          
 			    }
 			}
 			else if (strcmp(argument, "recursive") == 0 || (is_alias && strcmp(argument, "r") == 0)) {
@@ -324,7 +318,7 @@ SH_STATE sh_handle_pop(char **words, int n_words) {
 					if (i < n_words) {
 					    i--;
 					}
-					finish = !shu_check_noval_array("pop", "inputs", is_assigned_inputs);               
+					finish = !shu_check_noval_array("pop", "inputs", is_assigned_inputs);          
 			    }
 			}
 			else {
@@ -339,6 +333,38 @@ SH_STATE sh_handle_pop(char **words, int n_words) {
 
     if (!finish) {  
         state = pop(inputs, inputs_index);
+    }
+
+    return state;
+}
+
+SH_STATE sh_handle_status(char **words, int n_words) {
+    SH_STATE state = SH_CONTINUE;
+
+    
+
+    
+
+    bool is_alias, finish = false;
+    char *argument = NULL;
+    int i;
+
+    for (i = 1; i < n_words && !finish; i++) {
+        argument = shu_extract_argument(words[i], &is_alias);
+
+        if (argument == NULL) {
+            shu_value_without_argument(words[i]);
+        }
+        else {
+            
+			shu_unknown_argument("status", words[i]);
+        }
+    }
+
+    
+
+    if (!finish) {  
+        state = status();
     }
 
     return state;
@@ -426,6 +452,9 @@ SH_STATE sh_parse_command(char **words, int size) {
 		}
 		else if (strcmp(command, "pop") == 0) {
 			state = sh_handle_pop(words, size);
+		}
+		else if (strcmp(command, "status") == 0) {
+			state = sh_handle_status(words, size);
 		}
 		else if (strcmp(command, "stop") == 0) {
 			state = sh_handle_stop(words, size);
