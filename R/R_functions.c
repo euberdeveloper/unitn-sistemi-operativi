@@ -248,11 +248,11 @@ void visit_recursive(char *name, int mode, DATA_FILE* files, int* counter){
                     if (mode == WRITE_MODE){
                         files[*counter].path = (char*) malloc (sizeof(char) * (int)strlen(path) + 1);
                         strcpy(files[*counter].path, path);
-                        init_zero(&files[*counter]);
-                        //free(path);               
+                        init_zero(&files[*counter]);           
                     }
                     *counter = *counter + 1;               
                 }
+                free(path);
             }
             bpos += current_dir->d_reclen;
         }
