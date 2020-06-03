@@ -43,10 +43,10 @@ typedef struct
 
 
 
-static int const WRITE_MODE = 1;
+static const int WRITE_MODE = 1;
 static const char* SPACE = " ";
 static const char* TXT = ".txt";
-static int BUF_SIZE = 1024;
+static const int BUF_SIZE = 1024;
 
 DATA_FILE* deserialize(char* msg, int* result_size);
 char* serialize(DATA_FILE* files, int files_size);
@@ -58,7 +58,7 @@ bool ends_with_txt(char* str);
 void init_zero(DATA_FILE* file);
 void visit_recursive(char *name, int mode, DATA_FILE* files, int* counter);
 DATA_FILE* get_files(char** input, int input_size, int* files_size);
-
-
+void dealloc_FILES(DATA_FILE* files, int size);
+int print_file_short(DATA_FILE* file, bool case_sensitive, bool percentage);
 
 #endif
