@@ -1,32 +1,28 @@
-
 #include "../util/util.h"
 
 int main(int argc, char *argv[]){
-    int i, n = 3,m = 5;
+    int i, n = 12,m = 5;
     bool shell = false, rec = false;
-    char **inputs;
-    //parse_command(argc, argv, &n, &m, inputs, &shell, &rec);
+    data_inputs input;
 
-    for(i = 0; i < argc; i++){
-        if(strcmp(argv[i],"-shell") == 0){
-            shell = true;
-        }else if(strcmp(argv[i], "-n") == 0){
-            n =atoi(argv[++i]);
-        }else if(strcmp(argv[i], "-m") == 0){
-            m = atoi(argv[++i]);
-        }
-    }
+    parse_arguments(argc, argv, &n, &m, &input, &shell, &rec);
+    print_parsed_arguments(&n, &m, &input, &shell, &rec);
+
     if(shell){
         pthread_t shell_thread;
         pthread_create(&shell_thread,NULL, pthread_fd_shell_receiver, NULL);
-        //pthread_join(shell_thread, NULL);
     }else{
-        //integrated_shell
+        //integrated_shell();
     }
 
+    //Input_Fix (Folder Search)
 
+    data_process *process = create_process(n, m, input, "/P");
 
+    while(wait(NULL) > 0) //Waits for children
+        ;
 
-    //parse_command
+    print_files_data(process[0].arg);
+
     return 0;
 }
