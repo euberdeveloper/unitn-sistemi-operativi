@@ -3,9 +3,12 @@
 
 /* IMPORTS */
 
+#define _GNU_SOURCE 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <termios.h>
+#include <unistd.h>
 #include "../general/general.h"
 
 /* FUNCTIONS */
@@ -15,6 +18,11 @@
  * @return The read line as a string
 */
 char *txt_readline();
+/**
+ * Reads from stdin a line of text
+ * @return The read line as a string
+*/
+char *txt_readline_special();
 /**
  * Splits a line into words
  * @param line The line to be split into words

@@ -590,7 +590,7 @@ void sh_loop() {
     while (state != SH_EXIT) {
         printf("%s", sh_prompt_symbol);
         fflush(stdout);
-        command = txt_readline();
+        command = txt_readline_special();
         free(sh_last_command);
         sh_last_command = strdup(command);
         words = txt_splitline(command, &n_words);
