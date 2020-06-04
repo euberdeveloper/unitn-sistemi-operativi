@@ -14,6 +14,8 @@ char *sh_prompt_symbol = ">> ";
 SH_STATE sh_handle__arguments(char **words, int n_words) {
     SH_STATE state = SH_CONTINUE;
 
+    
+
     int p_number = 3;
 	int q_number = 4;
 	int inputs_size = 0;

@@ -19,10 +19,14 @@
 */
 char *txt_readline();
 /**
- * Reads from stdin a line of text
+ * Reads from stdin a line of text, providing also backspace, left 
+ * and right arrow usage and a history of the old commands, accessible
+ * with the up and down arrows.
+ * @param history The strings array containing the old commands
+ * @param history_size The number of old commands
  * @return The read line as a string
 */
-char *txt_readline_special();
+char *txt_readline_special(char** history, int history_size);
 /**
  * Splits a line into words
  * @param line The line to be split into words
