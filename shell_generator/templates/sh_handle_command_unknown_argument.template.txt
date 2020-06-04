@@ -1,3 +1,0 @@
-{construct} {{
-    shu_unknown_argument("{command_name}", words[i]);
-}}

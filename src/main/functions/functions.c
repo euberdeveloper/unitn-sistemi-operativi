@@ -1,49 +1,59 @@
 #include "functions.h"
 
-extern char* sh_last_command;
+/* HELPER FUNCTIONS DECLARATIONS */
+
+static void forward_and_wait(int pipe[]);
+
+/* EXPORTED FUNCTIONS */
+
+SH_STATE arguments(int p_number, int q_number, char** inputs, int inputs_size, bool recursive) {
+    sig_init_signals();
+}
 
 SH_STATE init(int p_number, int q_number, char** inputs, int inputs_size, bool recursive) {
-    write(analyzer_pipe[1], sh_last_command, strlen(sh_last_command) * sizeof(char));
+    forward_and_wait(analyzer_pipe);
     return SH_CONTINUE;
 }
 
 SH_STATE set(int p_number, int q_number, char** inputs, int inputs_size, bool recursive, bool keep) {
-    write(analyzer_pipe[1], sh_last_command, strlen(sh_last_command) * sizeof(char));
-
+    forward_and_wait(analyzer_pipe);
     return SH_CONTINUE;
 }
 
 SH_STATE restart(int p_number, int q_number, char** inputs, int inputs_size, bool recursive) {
-    write(analyzer_pipe[1], sh_last_command, strlen(sh_last_command) * sizeof(char));
-
+    forward_and_wait(analyzer_pipe);
     return SH_CONTINUE;
 }
 
 SH_STATE pop(char** inputs, int inputs_size) {
-    write(analyzer_pipe[1], sh_last_command, strlen(sh_last_command) * sizeof(char));
-
+    forward_and_wait(analyzer_pipe);
     return SH_CONTINUE;
 }
 
 SH_STATE status() {
-    write(analyzer_pipe[1], sh_last_command, strlen(sh_last_command) * sizeof(char));
-
+    forward_and_wait(analyzer_pipe);
     return SH_CONTINUE;
 }
 SH_STATE stop() {
-    write(analyzer_pipe[1], sh_last_command, strlen(sh_last_command) * sizeof(char));
-
+    forward_and_wait(analyzer_pipe);
     return SH_CONTINUE;
 }
 
 SH_STATE show(bool sensitive, bool percentage, bool realtime, bool detailed, char** files, int files_size) {
-    write(reporter_pipe[1], sh_last_command, strlen(sh_last_command) * sizeof(char));
-
+    forward_and_wait(reporter_pipe);
     return SH_CONTINUE;
 }
 
 SH_STATE quit() {
-    write(analyzer_pipe[1], sh_last_command, strlen(sh_last_command) * sizeof(char));
-
+    forward_and_wait(analyzer_pipe);
+    forward_and_wait(reporter_pipe);
     return SH_EXIT;
+}
+
+/* HELPER FUNCTIONS DEFINITIONS */
+
+static void forward_and_wait(int pipe[]) {
+    sig_wait_command_termination = true;
+    write(pipe[1], sh_last_command, strlen(sh_last_command) * sizeof(char));
+    while (sig_wait_command_termination) ;
 }

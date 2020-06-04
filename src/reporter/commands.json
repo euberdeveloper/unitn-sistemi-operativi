@@ -1,4 +1,37 @@
 {
+    "_arguments": {
+        "function": "arguments",
+        "arguments": {
+            "is-shell": {
+                "type": "bool"
+            },
+            "main-pid": {
+                "type": "int",
+                "default": -1
+            },
+            "sensitive": {
+                "type": "bool",
+                "alias": "s"
+            },
+            "percentage": {
+                "type": "bool",
+                "alias": "p"
+            },
+            "realtime": {
+                "type": "bool",
+                "alias": "r"
+            },
+            "detailed": {
+                "type": "bool",
+                "alias": "d"
+            },
+            "files": {
+                "type": "array<char*>",
+                "alias": "f",
+                "default": "NULL"
+            }
+        }
+    },
     "show": {
         "function": "show",
         "arguments": {

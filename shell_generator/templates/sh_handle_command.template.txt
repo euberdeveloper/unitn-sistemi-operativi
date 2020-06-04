@@ -13,7 +13,7 @@ SH_STATE sh_handle_{command_name}(char **words, int n_words) {{
         argument = shu_extract_argument(words[i], &is_alias);
 
         if (argument == NULL) {{
-            shu_value_without_argument(words[i]);
+            shu_value_without_argument(words[i], {write});
         }}
         else {{
             {arguments_conditions}

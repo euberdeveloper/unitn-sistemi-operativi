@@ -1,4 +1,30 @@
 {
+    "_arguments": {
+        "function": "arguments",
+        "arguments": {
+            "p-number": {
+                "type": "int",
+                "alias": "n",
+                "default": 3,
+                "min": 1
+            },
+            "q-number": {
+                "type": "int",
+                "alias": "m",
+                "default": 4,
+                "min": 1
+            },
+            "inputs": {
+                "type": "array<char*>",
+                "alias": "i",
+                "default": "NULL"
+            },
+            "recursive": {
+                "type": "bool",
+                "alias": "r"
+            }
+        }
+    },
     "init": {
         "function": "init",
         "arguments": {

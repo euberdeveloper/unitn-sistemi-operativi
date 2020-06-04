@@ -14,7 +14,6 @@ C_TEMPLATE = f'{__dirname}/templates/c.template.txt'
 SH_PARSE_COMMAND_TEMPLATE = f'{__dirname}/templates/sh_parse_command.template.txt'
 SH_HANDLE_COMMAND_TEMPLATE = f'{__dirname}/templates/sh_handle_command.template.txt'
 SH_HANDLE_COMMAND_CONDITION_TEMPLATE = f'{__dirname}/templates/sh_handle_command_condition.template.txt'
-SH_HANDLE_COMMAND_UNKNOWN_ARGUMENT_TEMPLATE = f'{__dirname}/templates/sh_handle_command_unknown_argument.template.txt'
 SH_HANDLE_COMMAND_ARRAY_ASSIGNMENT_TEMPLATE = f'{__dirname}/templates/sh_handle_command_array_assignment.template.txt'
 
 # Arguments
@@ -38,9 +37,6 @@ with open(SH_HANDLE_COMMAND_TEMPLATE) as sh_handle_command_template_file:
 
 with open(SH_HANDLE_COMMAND_CONDITION_TEMPLATE) as sh_handle_command_condition_template_file:
     sh_handle_command_condition_template = sh_handle_command_condition_template_file.read()
-
-with open(SH_HANDLE_COMMAND_UNKNOWN_ARGUMENT_TEMPLATE) as sh_handle_command_unknown_argument_template_file:
-    sh_handle_command_unknown_argument_template = sh_handle_command_unknown_argument_template_file.read()
 
 with open(SH_HANDLE_COMMAND_ARRAY_ASSIGNMENT_TEMPLATE) as sh_handle_command_array_assignment_file:
     sh_handle_command_array_assignment = sh_handle_command_array_assignment_file.read()
@@ -110,14 +106,14 @@ def get_conditional(condition: str, content: str, *, index=0):
 def tab(text: str, n_tabs: int, *, tab_first=False):
     return '\n'.join([(('\t' * n_tabs) if tab_first or index != 0 else '') + line for index, line in enumerate(text.splitlines())])
 
-def get_argument_assignment(command_name: str, argument_name: str, argument_type: str):
-    return f'!shu_get_{argument_type}_value("{command_name}", "{argument_name}", words[i], &{purge_name(argument_name)})'
+def get_argument_assignment(command_name: str, argument_name: str, argument_type: str, write: str):
+    return f'!shu_get_{argument_type}_value("{command_name}", "{argument_name}", words[i], &{purge_name(argument_name)}, {write})'
 
-def get_argument_max(command_name: str, argument_name: str, argument_type: str, max_value: str):
-    return f'\n\t|| !shu_check_max_{argument_type}("{command_name}", "{argument_name}", {purge_name(argument_name)}, {max_value})'
+def get_argument_max(command_name: str, argument_name: str, argument_type: str, max_value: str, write: str):
+    return f'\n\t|| !shu_check_max_{argument_type}("{command_name}", "{argument_name}", {purge_name(argument_name)}, {max_value}, {write})'
 
-def get_argument_min(command_name: str, argument_name: str, argument_type: str, min_value: str):
-    return f'\n\t|| !shu_check_min_{argument_type}("{command_name}", "{argument_name}", {purge_name(argument_name)}, {min_value})'
+def get_argument_min(command_name: str, argument_name: str, argument_type: str, min_value: str, write: str):
+    return f'\n\t|| !shu_check_min_{argument_type}("{command_name}", "{argument_name}", {purge_name(argument_name)}, {min_value}, {write})'
 
 # Generate output directory
 
@@ -137,9 +133,19 @@ def generate_header_extern_functions(commands: dict):
     functions = [generate_header_extern_function(command_details) for _, command_details in commands.items()]
     return '\n'.join(functions)
 
+def generate_header_declared_function(command_name: str):
+    function_name = f'sh_handle_{command_name}'
+
+    return f'SH_STATE {function_name}(char** words, int n_words);'
+
+def generate_header_declared_functions(commands: dict):
+    functions = [generate_header_declared_function(command_name) for command_name, _ in commands.items()]
+    return '\n'.join(functions)
+
 def generate_header_file(commands: dict):
     extern_functions = generate_header_extern_functions(commands)
-    return header_template.format(extern_functions = extern_functions)
+    declared_functions = generate_header_declared_functions(commands)
+    return header_template.format(extern_functions=extern_functions, declared_functions=declared_functions)
 
 h_output = f'{OUTPUT_PATH}/{library_name(OUTPUT_PATH)}.h'
 with open(h_output, 'w') as h_output_file:
@@ -169,17 +175,21 @@ def generate_c_handle_command_arguments_declarations(arguments: dict):
     return '\n'.join(lines)
 
 def generate_c_handle_command_arguments_condition_assign_argument_array(command_name: str, argument_name: str, argument_item_type: str, argument_default: str):
+    write = 'false' if command_name == '_arguments' else 'true'
+
     if argument_item_type == 'char*':
         assignment = f'{purge_name(argument_name)}[{purge_name(argument_name)}_index++] = strdup(words[i]);'
     else:
-        assignment = f'finish = !shu_get_{argument_item_type}_value("{command_name}", "{argument_name}", words[i], &{purge_name(argument_name)}[{purge_name(argument_name)}_index++]);'
+        assignment = f'finish = !shu_get_{argument_item_type}_value("{command_name}", "{argument_name}", words[i], &{purge_name(argument_name)}[{purge_name(argument_name)}_index++], {write});'
 
     assignment_required = f'is_assigned_{argument_name} = true;' if argument_default is None else ''
-    last_check = f'finish = !shu_check_noval_array("{command_name}", "{argument_name}", is_assigned_{argument_name});' if argument_default is None else '' 
+    last_check = f'finish = !shu_check_noval_array("{command_name}", "{argument_name}", is_assigned_{argument_name}, {write});' if argument_default is None else '' 
 
     return sh_handle_command_array_assignment.format(argument_name=argument_name, argument_item_type=argument_item_type, assignment=assignment, assignment_required=assignment_required, last_check=last_check)
 
 def generate_c_handle_command_arguments_condition_assign_argument(command_name: str, argument_name: str, argument_details: dict):
+    write = 'false' if command_name == '_arguments' else 'true'
+    
     argument_raw_type = argument_details.get('type')
     argument_type, argument_item_type = split_array_argument(argument_raw_type)
     argument_max, argument_min = argument_details.get('max'), argument_details.get('min')
@@ -192,13 +202,15 @@ def generate_c_handle_command_arguments_condition_assign_argument(command_name: 
     elif argument_type == 'char*':
         return f'{purge_name(argument_name)} = strdup(words[i]);'
     else:
-        assign_str = get_argument_assignment(command_name, argument_name, argument_type)
-        max_str = get_argument_max(command_name, argument_name, argument_type, argument_max) if argument_max is not None else ''
-        min_str = get_argument_min(command_name, argument_name, argument_type, argument_min) if argument_min is not None else ''
+        assign_str = get_argument_assignment(command_name, argument_name, argument_type, write)
+        max_str = get_argument_max(command_name, argument_name, argument_type, argument_max, write) if argument_max is not None else ''
+        min_str = get_argument_min(command_name, argument_name, argument_type, argument_min, write) if argument_min is not None else ''
         return f'finish = {assign_str}{max_str}{min_str};'
     
 
 def generate_c_handle_command_arguments_condition(command_name, argument_name, argument_details, *, index):
+    write = 'false' if command_name == '_arguments' else 'true'
+
     argument_alias = argument_details.get('alias')
     argument_default = argument_details.get('default')
     argument_raw_type = argument_details.get('type')
@@ -210,7 +222,7 @@ def generate_c_handle_command_arguments_condition(command_name, argument_name, a
     condition_alias = f' || (is_alias && strcmp(argument, "{argument_alias}") == 0)' if argument_alias is not None else ''
     condition = f'{condition_construct} ({condition_main}{condition_alias})'
 
-    check_noval = f'finish = !shu_check_noval("{command_name}", "{argument_name}", n_words, &i);' if argument_type != 'bool' else ''
+    check_noval = f'finish = !shu_check_noval("{command_name}", "{argument_name}", n_words, &i, {write});' if argument_type != 'bool' else ''
 
     assign_is_assigned = tab(f'is_assigned_{purge_name(argument_name)} = true;' if argument_default is None and argument_type != 'bool' and argument_type != 'array' else '', 1)
 
@@ -219,6 +231,8 @@ def generate_c_handle_command_arguments_condition(command_name, argument_name, a
     return sh_handle_command_condition_template.format(condition=condition, check_noval=check_noval, assign_is_assigned=assign_is_assigned, assign_argument=assign_argument)
 
 def generate_c_handle_command_arguments_conditions(command_name: str, command_details: dict):
+    write = 'false' if command_name == '_arguments' else 'true'
+
     arguments = command_details.get('arguments')
     arguments = arguments if arguments is not None else {}
 
@@ -227,16 +241,18 @@ def generate_c_handle_command_arguments_conditions(command_name: str, command_de
     
     unknown_open = 'else {\n\t' if arguments else ''
     unknown_close = '\n}' if arguments else ''
-    unknown_argument = f'{unknown_open}shu_unknown_argument("{command_name}", words[i]);{unknown_close}'
+    unknown_argument = f'{unknown_open}shu_unknown_argument("{command_name}", words[i], {write});{unknown_close}'
 
     return f'{command_conditions}\n{unknown_argument}'
 
 def generate_c_handle_command_required_check(command_name: str, argument_name: str, argument_details: dict):
+    write = 'false' if command_name == '_arguments' else 'true'
+
     argument_default = argument_details.get('default')
     argument_type = argument_details.get('type')
 
     return (
-        get_conditional('!finish', f'finish = !shu_check_required("{command_name}", "{argument_name}", is_assigned_{purge_name(argument_name)});') 
+        get_conditional('!finish', f'finish = !shu_check_required("{command_name}", "{argument_name}", is_assigned_{purge_name(argument_name)}, {write});') 
         if argument_default is None and argument_type != 'bool'
         else '')
 
@@ -256,20 +272,21 @@ def generate_c_handle_command_function(command_name: str, command_details: dict)
     arguments = command_details.get('arguments')
     arguments = arguments if arguments is not None else {}
 
+    write = 'false' if command_name == '_arguments' else 'true'
     required_declarations = tab(generate_c_handle_command_required_declarations(arguments), 1)
     arguments_declarations = tab(generate_c_handle_command_arguments_declarations(arguments), 1)
     arguments_conditions = tab(generate_c_handle_command_arguments_conditions(command_name, command_details), 3)
     required_check = tab(generate_c_handle_command_required_checks(command_name, arguments), 1)
     command_function = generate_c_handle_command_command_function(command_details)
 
-    return sh_handle_command_template.format(command_name = command_name, required_declarations = required_declarations, arguments_declarations = arguments_declarations, arguments_conditions = arguments_conditions, required_check = required_check, command_function = command_function)
+    return sh_handle_command_template.format(command_name = command_name, required_declarations = required_declarations, arguments_declarations = arguments_declarations, arguments_conditions = arguments_conditions, required_check = required_check, command_function = command_function, write=write)
 
 def generate_c_handle_command_functions(commands: dict):
     functions = [generate_c_handle_command_function(command_name, command_details) for command_name, command_details in commands.items()]
     return '\n'.join(functions)
 
 def generate_c_parse_command_function(commands: dict):
-    command_names = commands.keys()
+    command_names = [key for key in commands.keys() if key != '_arguments']
     gen_condition = lambda command_name, index: get_conditional(get_strcmp_condition('command', f'"{command_name}"'), f'state = sh_handle_{purge_name(command_name)}(words, size);', index=index)
 
     conditions = [gen_condition(command_name, index) for index, command_name in enumerate(command_names)]

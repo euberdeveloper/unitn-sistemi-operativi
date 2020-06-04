@@ -5,7 +5,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <signal.h>
 #include "../../../libs/general/general.h"
+
+/* EXTERNS */
+
+extern char* sh_prompt_symbol;
 
 /* FUNCTIONS */
 

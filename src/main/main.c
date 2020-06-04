@@ -1,6 +1,8 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include "../../libs/shell_utils/shell_utils.h"
 #include "shell_commands/shell_commands.h"
@@ -11,9 +13,15 @@ const int WRITE_END = 1;
 int analyzer_pipe[2];
 int reporter_pipe[2];
 
-int main() {
+int main(int argc, char** argv) {
+    sh_handle__arguments(argv, argc);
+
     pipe(analyzer_pipe);
     pipe(reporter_pipe);
+
+    int int_main_pid = getpid();
+    char* main_pid;
+    asprintf(&main_pid, "%d", int_main_pid);
 
     int pid = fork();
     if (pid == -1) {
@@ -24,7 +32,7 @@ int main() {
         close(analyzer_pipe[READ_END]);
         close(analyzer_pipe[WRITE_END]);
 
-		execl("../analyzer/analyzer", "", NULL);
+		execl("../analyzer/analyzer", "temp", "--is-shell", "--main-pid", main_pid, NULL);
 	} 
     else {
         close(analyzer_pipe[READ_END]);
@@ -38,7 +46,7 @@ int main() {
             close(reporter_pipe[READ_END]);
             close(reporter_pipe[WRITE_END]);
 
-            execl("../reporter/reporter", "", NULL);
+            execl("../reporter/reporter", "temp", "--is-shell", "--main-pid", main_pid, NULL);
         } 
         else {
             close(reporter_pipe[READ_END]);

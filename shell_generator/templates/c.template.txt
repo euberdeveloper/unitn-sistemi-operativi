@@ -3,7 +3,11 @@
 /* HELPER CONSTANTS */
 
 static const int _SH_INIT_BUFFER = 23;
-static const char* _SH_PROMPT_SYMBOL = "{prompt_symbol}";
+
+/* EXPORTED VARIABLES */
+
+char *sh_last_command;
+char *sh_prompt_symbol = "{prompt_symbol}";
 
 /* EXPORTED FUNCTIONS */
 
@@ -20,7 +24,8 @@ void sh_loop() {{
     sh_last_command = strdup("");
 
     while (state != SH_EXIT) {{
-        printf("%s", _SH_PROMPT_SYMBOL);
+        printf("%s", sh_prompt_symbol);
+        fflush(stdout);
         command = txt_readline();
         free(sh_last_command);
         sh_last_command = strdup(command);

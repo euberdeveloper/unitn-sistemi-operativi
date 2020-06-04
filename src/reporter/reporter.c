@@ -5,7 +5,8 @@
 #include "shell_commands/shell_commands.h"
 #include "functions/functions.h"
 
-int main() {
+int main(int argc, char** argv) {
+    sh_handle__arguments(argv, argc);
     sh_loop();
     return 0;
 }
