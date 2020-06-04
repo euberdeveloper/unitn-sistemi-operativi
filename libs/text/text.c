@@ -34,19 +34,15 @@ char *txt_readline() {
     return line;
 }
 
-char *txt_readline_special() {
+char *txt_readline_special(char** history, int history_size) {
     char* line = strdup("");
     char typed_char[3];
-    int size = 0, length = 0, curr = -1, history_current = 4;
-    int i;
+    int size = 0, length = 0, curr = -1;
 
-    int history_size = 4;
-    char** history = malloc((history_size) * sizeof(char*));
-    history[0] = strdup("primo come va");
-    history[1] = strdup("secondo come va");
-    history[2] = strdup("third come va");
-    history[3] = strdup("viert come va");
+    int history_current = history_size;
     char* history_temp = NULL;
+
+    int i;
 
     change_terminal();
 
