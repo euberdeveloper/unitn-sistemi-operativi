@@ -235,10 +235,8 @@ void visit_recursive(char *name, int mode, DATA_FILE* files, int* counter){
         for (bpos = 0; bpos < nread;){
             current_dir = (linux_dirent *)(buf + bpos);
             if (strcmp(current_dir->d_name, ".") != 0 && strcmp(current_dir->d_name, "..") != 0){
-                char* path = (char*) malloc (sizeof(char) * (strlen(name) + 2 + strlen(current_dir->d_name) + 1));
-                strcpy(path,name); 
-                strcat(path,"/"); 
-                strcat(path,current_dir->d_name);
+                char* path;
+                asprintf(&path,"%s/%s", name, current_dir->d_name);
                 fd_2 = open(path, O_RDONLY | O_DIRECTORY);
                 if (fd_2 != -1){   
                     close(fd_2);
@@ -246,9 +244,13 @@ void visit_recursive(char *name, int mode, DATA_FILE* files, int* counter){
                 }
                 if (ends_with_txt(path)){
                     if (mode == WRITE_MODE){
-                        files[*counter].path = (char*) malloc (sizeof(char) * (int)strlen(path) + 1);
-                        strcpy(files[*counter].path, path);
-                        init_zero(&files[*counter]);           
+                        asprintf(&files[*counter].path, "%s", path);
+                        init_zero(&files[*counter]);   
+                        //
+                        struct stat s;
+                        stat(files[*counter].path, &s);
+                        files[*counter].size = s.st_size;
+                        //
                     }
                     *counter = *counter + 1;               
                 }
@@ -278,9 +280,16 @@ DATA_FILE* get_files(char** input, int input_size, int* files_size){
     int index = 0;
     for (i = 0; i < input_size; i++){
         if (ends_with_txt(input[i])){
-            ret_files[index].path = (char*) malloc (sizeof(char) * (int)strlen(input[i]) + 1);
-            strcat(ret_files[index].path, input[i]);
+            asprintf(&ret_files[index].path, "%s", input[i]);
             init_zero(&ret_files[index]);
+            
+            //
+            struct stat s;
+            stat(ret_files[index].path, &s);
+            ret_files[index].size = s.st_size;
+            //
+
+
             index++;
         } else {
             if (open(input[i], O_RDONLY | O_DIRECTORY) != -1){
@@ -292,14 +301,15 @@ DATA_FILE* get_files(char** input, int input_size, int* files_size){
 }
 
 
+
 void dealloc_FILES(DATA_FILE* files, int size){
-    printf("Deallocation started..");
+   // printf("Deallocation started..");
     int i;
     for (i = 0; i < size; i++){
         free(files[i].path);
     }
     free(files);
-    printf("DONE!\n");
+    //printf("DONE!\n");
 }
 
 

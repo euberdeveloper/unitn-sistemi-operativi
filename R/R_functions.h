@@ -25,6 +25,7 @@ typedef struct{
 
 typedef struct{
     char* path;
+    off_t size;
     DATA_INFO data_info;
 }DATA_FILE;
 
