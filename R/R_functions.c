@@ -261,6 +261,7 @@ void visit_recursive(char *name, int mode, DATA_FILE* files, int* counter){
             bpos += current_dir->d_reclen;
         }
     }
+    close(fd);
     return;
 }
 
@@ -314,7 +315,7 @@ void visit_iterative(char *name, int mode, DATA_FILE *files, int *counter)
 {
     Queue Q;
     //printf("Iterative\n");
-    init(&Q, 100);//100 rappresent the number of folders we can handle
+    init(&Q, 10000);//100 rappresent the number of folders we can handle
     push(&Q, name);
     while (!is_empty(&Q))
     {
@@ -342,6 +343,7 @@ void visit_iterative(char *name, int mode, DATA_FILE *files, int *counter)
                     {
                         close(fd_2);
                         push(&Q, path);
+                        //printf("size = %d\n", Q.size);
                     } else {
                     if (ends_with_txt(path))
                     {
@@ -362,6 +364,7 @@ void visit_iterative(char *name, int mode, DATA_FILE *files, int *counter)
                 bpos += current_dir->d_reclen;
             }
         }
+        close(fd);
         free(name);
     }
     de_init(&Q);
