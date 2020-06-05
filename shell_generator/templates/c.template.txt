@@ -8,6 +8,7 @@ static const int _SH_INIT_BUFFER = 23;
 
 char *sh_last_command;
 char *sh_prompt_symbol = "{prompt_symbol}";
+bool sh_use_advanced_terminal = true;
 
 /* EXPORTED FUNCTIONS */
 
@@ -30,7 +31,9 @@ void sh_loop() {{
         printf("%s", sh_prompt_symbol);
         fflush(stdout);
 
-        command = txt_readline_special(history, history_index);
+        command = sh_use_advanced_terminal 
+            ? txt_readline_special(history, history_index)
+            : txt_readline();
 
         free(sh_last_command);
         sh_last_command = strdup(command);

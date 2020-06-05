@@ -56,5 +56,6 @@ void sh_loop();
 
 extern char *sh_last_command;
 extern char *sh_prompt_symbol;
+extern bool sh_use_advanced_terminal;
 
 #endif

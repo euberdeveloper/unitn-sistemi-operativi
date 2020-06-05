@@ -15,6 +15,7 @@ static void ende_mitteilen();
 SH_STATE arguments(bool local_is_shell, int local_main_pid, bool sensitive, bool percentage, bool realtime, bool detailed, char** files, int files_size) {
     if (local_is_shell) {
         sh_prompt_symbol = "";
+        sh_use_advanced_terminal = false;
         is_shell = true;
         main_pid = local_main_pid;
     }

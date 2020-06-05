@@ -15,6 +15,7 @@ static void ende_mitteilen();
 SH_STATE arguments(bool local_is_shell, int local_main_pid, int p_number, int q_number, char** inputs, int inputs_size, bool recursive) {
     if (local_is_shell) {
         sh_prompt_symbol = "";
+        sh_use_advanced_terminal = false;
         is_shell = true;
         main_pid = local_main_pid;
     }
