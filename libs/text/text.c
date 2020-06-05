@@ -49,6 +49,10 @@ char *txt_readline_special(char** history, int history_size) {
     do {
         read(STDIN_FILENO, &typed_char, 3);
         if (typed_char[0] == '\n') {
+            for (i = curr; i < length; i++) {
+                printf("%s", _TXT_MOVE_RIGHT);
+            }
+
             length += 2;
 
             if (length > size) {
@@ -177,7 +181,7 @@ char *txt_readline_special(char** history, int history_size) {
     while(typed_char[0] != '\n');
 
     reset_terminal();
-    printf("\n");
+    puts(" ");
 
     return line;
 }

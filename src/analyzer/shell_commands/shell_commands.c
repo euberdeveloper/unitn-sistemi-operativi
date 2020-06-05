@@ -594,7 +594,7 @@ void sh_loop() {
         printf("%s", sh_prompt_symbol);
         fflush(stdout);
 
-        command = txt_readline_special(history, history_index);
+        command = txt_readline(history, history_index);
 
         free(sh_last_command);
         sh_last_command = strdup(command);
