@@ -1,4 +1,5 @@
 #include "R_functions.h"
+#include "../Queue/queue.h"
 #include <math.h>
 
 DATA_FILE* deserialize(char* msg, int* result_size){
@@ -215,6 +216,7 @@ void init_zero(DATA_FILE* file){
 }
 
 void visit_recursive(char *name, int mode, DATA_FILE* files, int* counter){
+    //printf("Recursive\n");
     linux_dirent *current_dir;
     int nread;
     int bpos;
@@ -262,7 +264,7 @@ void visit_recursive(char *name, int mode, DATA_FILE* files, int* counter){
     return;
 }
 
-DATA_FILE* get_files(char** input, int input_size, int* files_size){
+DATA_FILE* get_files(char** input, int input_size, int* files_size, bool iterative){
     int to_alloc = 0;
     int i;
     DATA_FILE* ret_files;
@@ -271,7 +273,11 @@ DATA_FILE* get_files(char** input, int input_size, int* files_size){
             to_alloc++;
         } else {
             if (open(input[i],O_RDONLY | O_DIRECTORY) != 1){
-                visit_recursive(input[i],0,NULL,&to_alloc);
+                if(!iterative){
+                    visit_recursive(input[i],0,NULL,&to_alloc);
+                } else {
+                    visit_iterative(input[i],0,NULL,&to_alloc);
+                }
             }
         }
     }
@@ -293,14 +299,74 @@ DATA_FILE* get_files(char** input, int input_size, int* files_size){
             index++;
         } else {
             if (open(input[i], O_RDONLY | O_DIRECTORY) != -1){
-                visit_recursive(input[i], WRITE_MODE, ret_files, &index);
+                if (!iterative){
+                    visit_recursive(input[i], WRITE_MODE, ret_files, &index);
+                } else {
+                    visit_iterative(input[i], WRITE_MODE, ret_files, &index);
+                }
             }
         }
     }
     return ret_files;
 }
 
-
+void visit_iterative(char *name, int mode, DATA_FILE *files, int *counter)
+{
+    Queue Q;
+    //printf("Iterative\n");
+    init(&Q, 100);//100 rappresent the number of folders we can handle
+    push(&Q, name);
+    while (!is_empty(&Q))
+    {
+        linux_dirent *current_dir;
+        int nread;
+        int bpos;
+        int fd;
+        int fd_2;
+        char buf[1024 * 1024];
+        asprintf(&name, "%s", front(&Q));
+        pop(&Q);
+        fd = open(name, O_RDONLY | O_DIRECTORY);
+        nread = syscall(SYS_getdents, fd, buf, 1024*1024);
+        if (nread != 0)
+        {
+            for (bpos = 0; bpos < nread;)
+            {
+                current_dir = (linux_dirent *)(buf + bpos);
+                if (strcmp(current_dir->d_name, ".") != 0 && strcmp(current_dir->d_name, "..") != 0)
+                {
+                    char *path;
+                    asprintf(&path, "%s/%s", name, current_dir->d_name);
+                    fd_2 = open(path, O_RDONLY | O_DIRECTORY);
+                    if (fd_2 != -1)
+                    {
+                        close(fd_2);
+                        push(&Q, path);
+                    } else {
+                    if (ends_with_txt(path))
+                    {
+                        if (mode == WRITE_MODE)
+                        {
+                            asprintf(&files[*counter].path, "%s", path);
+                            init_zero(&files[*counter]);
+                            //
+                            struct stat s;
+                            stat(files[*counter].path, &s);
+                            files[*counter].size = s.st_size;
+                            //
+                        }
+                        *counter = *counter + 1;
+                    }}
+                    free(path);
+                }
+                bpos += current_dir->d_reclen;
+            }
+        }
+        free(name);
+    }
+    de_init(&Q);
+    return;
+}
 
 void dealloc_FILES(DATA_FILE* files, int size){
    // printf("Deallocation started..");

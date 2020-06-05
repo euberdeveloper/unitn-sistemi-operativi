@@ -58,8 +58,10 @@ char* FILE_to_string(const DATA_FILE f);
 bool ends_with_txt(char* str);
 void init_zero(DATA_FILE* file);
 void visit_recursive(char *name, int mode, DATA_FILE* files, int* counter);
-DATA_FILE* get_files(char** input, int input_size, int* files_size);
+void visit_iterative(char *name, int mode, DATA_FILE *files, int *counter);
+DATA_FILE* get_files(char** input, int input_size, int* files_size, bool iterative);
 void dealloc_FILES(DATA_FILE* files, int size);
 int print_file_short(DATA_FILE* file, bool case_sensitive, bool percentage);
+
 
 #endif
