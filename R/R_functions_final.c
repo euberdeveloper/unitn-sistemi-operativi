@@ -1,221 +1,24 @@
 #include "R_functions_final.h"
-#include "../Queue/queue.h"
+#include "../../Queue/queue.h"
 #include <math.h>
 
-#define LINE "----------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
+#define LINE "--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
 
-DATA_FILE* deserialize(char* msg, int* result_size){
-    printf("Deserialization...");
-    fflush(stdout);
-    char* iterator;
-    iterator = strtok(msg, SPACE);
-	//iterator = strtok(NULL,SPACE);
-    sscanf(iterator ,"%d ", result_size);
-    DATA_FILE* FILES = malloc ((*result_size) * (sizeof *FILES));
-    int j = 0;
-    int z = 0;
-    for (j = 0; j < (*result_size); j++){
-        int i; 
-        for(i = 0; i < 7; i++){
-            switch (i)
-            {
-                case 0:{
-                    if(z == 0){iterator = strtok(NULL, " ");z++;} 
-                    int path_size = strlen(iterator);
-                    FILES[j].path = (char*) malloc (path_size * sizeof(char));
-                    strcpy(FILES[j].path, iterator);
-                    break;
-                }
-                case 1:{
-                    sscanf(iterator, "%d", &FILES[j].data_info.alpha_upper);
-                    break;
-                }
-                case 2:{
-                    sscanf(iterator, "%d", &FILES[j].data_info.alpha_lower);
-                    break;
-                }
-                case 3:{
-                    sscanf(iterator, "%d", &FILES[j].data_info.digit);
-                    break;
-                }
-                case 4:{
-                    sscanf(iterator, "%d", &FILES[j].data_info.punct);
-                    break;
-                }
-                case 5:{
-                    sscanf(iterator, "%d", &FILES[j].data_info.space);
-                    break;
-                }
-                case 6:{
-                    sscanf(iterator, "%d", &FILES[j].data_info.other);
-                    break;
-                }
-            }       
-            iterator = strtok(NULL, " ");
-        }    
-    }
-    printf("Done\n");
-    fflush(stdout);
-    return FILES;
-}
-
-int total_letter_from_file(DATA_FILE* file){
+unsigned long long int total_letter_from_file(DATA_FILE* file){
     return (file->data_info.alpha_lower + file->data_info.alpha_upper + file->data_info.digit + file->data_info.punct + file->data_info.space + file->data_info.other);
-}
-
-
-
-
-
-int print_file(DATA_FILE* file, bool case_sensitive, bool percentage){
-    unsigned long  tot = total_letter_from_file(file);
-   // printf("tot = %d\n", tot);
-   if(percentage){
-        printf("--------------------------------------------------\n");//50
-        printf("%-50s|\n", basename(file->path));
-        printf("--------------------------------------------------\n");
-        fflush(stdout);
-        printf("%-18s|", "       Type");
-        printf("%-10s |", "  Quantity  ");
-        printf("%-17s|\n", "   Percentage");
-        printf("--------------------------------------------------\n");
-        fflush(stdout);
-        if(case_sensitive){
-            printf("Alpha_upper       | %-12d|      %-7.2f%s   |\n", file->data_info.alpha_upper,fabs((float) ((float)file->data_info.alpha_lower / (float)tot) * 100.0), "%");
-            printf("--------------------------------------------------\n");
-            printf("Aplha_over        | %-12d|      %-7.2f%s   |\n", file->data_info.alpha_lower,fabs((float) ((float)file->data_info.alpha_lower / (float)tot) * 100.0), "%");
-            printf("--------------------------------------------------\n");
-        } else {
-            printf("Alpha             | %-12d|      %-7.2f%s   |\n", file->data_info.alpha_upper + file->data_info.alpha_lower, fabs((float) (((float)(file->data_info.alpha_upper + file->data_info.alpha_lower)) / (float)tot) * 100.0), "%");
-            printf("--------------------------------------------------\n");
-        }
-        printf("Digit             | %-12d|      %-7.2f%s   |\n", file->data_info.digit, fabs((float) ((float)file->data_info.digit / (float)tot) * 100.0), "%");
-        printf("--------------------------------------------------\n");
-        fflush(stdout);
-        printf("Punct             | %-12d|      %-7.2f%s   |\n", file->data_info.punct, fabs((float) ((float)file->data_info.punct / (float)tot) * 100.0), "%");
-        printf("--------------------------------------------------\n");
-        fflush(stdout);
-        printf("Space             | %-12d|      %-7.2f%s   |\n", file->data_info.space, fabs((float) ((float)file->data_info.space / (float)tot) * 100.0), "%");
-        printf("--------------------------------------------------\n");
-        fflush(stdout);
-        printf("Other             | %-12d|      %-7.2f%s   |\n", file->data_info.other, fabs((float) ((float)file->data_info.other / (float)tot) * 100.0), "%");
-        printf("--------------------------------------------------\n");
-        fflush(stdout);
-    } else {
-        printf("--------------------------------------------------\n");//50
-        printf("%-50s|\n", basename(file->path));
-        printf("--------------------------------------------------\n");
-        fflush(stdout);
-        printf("%-18s|", "       Type");
-        printf("%-30s |\n", "  Quantity  ");
-        printf("--------------------------------------------------\n");
-        if(case_sensitive){
-            printf("Alpha_upper       | %-30d|\n", file->data_info.alpha_upper);
-            printf("--------------------------------------------------\n");
-            printf("Aplha_over        | %-30d|\n", file->data_info.alpha_lower);
-            printf("--------------------------------------------------\n");
-        } else {
-            printf("Alpha             | %-30d|\n", file->data_info.alpha_upper + file->data_info.alpha_lower);
-            printf("--------------------------------------------------\n");
-        }
-        printf("Digit             | %-30d|\n", file->data_info.digit);
-        printf("--------------------------------------------------\n");
-        fflush(stdout);
-        printf("Punct             | %-30d|\n", file->data_info.punct);
-        printf("--------------------------------------------------\n");
-        fflush(stdout);
-        printf("Space             | %-30d|\n", file->data_info.space);
-        printf("--------------------------------------------------\n");
-        fflush(stdout);
-        printf("Other             | %-30d|\n", file->data_info.other);
-        printf("--------------------------------------------------\n");
-        fflush(stdout);
-
-    }
-  
-    return 0;
-}
-
-
-
-
-int show_files(DATA_FILE* files, int number_of_files, bool case_sensitive, bool percentage, char** files_names, int size_file_names){
-    int i;
-    if (files_names == NULL){
-        for(i = 0; i < number_of_files; i++){
-            print_file(&files[i], case_sensitive, percentage);
-            printf("\n");
-            fflush(stdout);
-        }
-    } else {
-        for (i = 0; i < size_file_names; i++){
-            int j;
-            for(j = 0; j < number_of_files; j++){
-                if(strcmp(files_names[i], files[j].path) == 0){
-                    print_file(&files[j], case_sensitive, percentage);
-                    printf("\n");
-                    fflush(stdout);
-                    break;
-                }
-            }
-        }
-    }
-    return 0;
-}
-
-char* FILE_to_string(const DATA_FILE f){
-    size_t len = 0;
-    len = snprintf (NULL, 0, " %s %d %d %d %d %d %d", f.path, f.data_info.alpha_upper, f.data_info.alpha_lower, f.data_info.digit, f.data_info.punct, f.data_info.space, f.data_info.other);
-    char *ret = calloc (1, sizeof *ret * len + 1);
-    snprintf (ret, len + 1, " %s %d %d %d %d %d %d", f.path, f.data_info.alpha_upper, f.data_info.alpha_lower, f.data_info.digit, f.data_info.punct, f.data_info.space, f.data_info.other);
-    return ret;
-}
-
-char* serialize(DATA_FILE* files, int files_size){
-    printf("Serialization...");
-    int curr_len = snprintf(NULL, 0 , "%d", files_size);
-    char * ret = (char*) malloc(curr_len + 1);
-    snprintf(ret , curr_len + 1, "%d", files_size);
-    int index;
-    int current_string_index = strlen(ret);
-    int max_size = current_string_index;
-    for (index = 0; index < files_size; index++){
-        //2 for
-        //1 per len
-        //1 per strcat
-        char* file_index_string = FILE_to_string(files[index]);
-        int increment = strlen(file_index_string);
-        ret = (char*)realloc(ret, sizeof(char) * (current_string_index + increment + 2));
-        strcat(ret, file_index_string);
-        current_string_index += increment;
-    }
-
-    int ret_len = strlen(ret);
-    char* true_ret;
-    true_ret = (char*) malloc (ret_len + 9);
-    
-    
-    sprintf(true_ret, "%08d", (int)ret_len);
-    //true_ret[8] = ' ';
-    true_ret = (char*) realloc(true_ret, ret_len + 9);
-    strcat(true_ret, ret);
-    free(ret);
-    printf("Done\n");
-    return true_ret;
 }
 
 bool ends_with_txt(char* str){
     return (strcmp(&str[strlen(str) - 4], TXT) == 0);
 }
 
-//TODO reset to zero
 void init_zero(DATA_FILE* file){
-    file->data_info.alpha_lower = 11232;
-    file->data_info.alpha_upper = 231231;
-    file->data_info.digit = 31123;
-    file->data_info.other = 21233;
-    file->data_info.punct = 5123;
-    file->data_info.space = 13123;
+    file->data_info.alpha_lower = 0;
+    file->data_info.alpha_upper = 0;
+    file->data_info.digit = 0;
+    file->data_info.other = 0;
+    file->data_info.punct = 0;
+    file->data_info.space = 0;
 }
 
 void visit_recursive(char *name,  int mode, DATA_FILE* files, int* counter){
@@ -285,7 +88,7 @@ DATA_FILE* get_files(char** input, int input_size, int* files_size, bool iterati
             }
         }
     }
-    ret_files = (DATA_FILE*) malloc (sizeof(DATA_FILE) * to_alloc);
+    ret_files = (DATA_FILE*) malloc (sizeof(DATA_FILE) * (to_alloc + 1));
     *files_size = to_alloc;
     int index = 0;
     for (i = 0; i < input_size; i++){
@@ -311,6 +114,7 @@ DATA_FILE* get_files(char** input, int input_size, int* files_size, bool iterati
             }
         }
     }
+    ret_files[to_alloc + 1].path = NULL;
     return ret_files;
 }
 
@@ -375,13 +179,11 @@ void visit_iterative(char *name, int mode, DATA_FILE *files, int *counter)
 }
 
 void dealloc_FILES(DATA_FILE* files, int size){
-   // printf("Deallocation started..");
     int i;
     for (i = 0; i < size; i++){
         free(files[i].path);
     }
     free(files);
-    //printf("DONE!\n");
 }
 
 char* first_ten(char* str){
@@ -400,39 +202,41 @@ char* first_ten(char* str){
     return ret;
 }
 
-
-
 int print_file_short(DATA_FILE* file, bool case_sensitive, bool percentage){
-    //int size = total_letter_from_file(file);
+    
+    if (file->size == 0){
+        percentage = false;
+    }
+    
     char* start = first_ten(file->path);
-    printf("%s ... %-25s|",start ,basename(file->path));
+    printf("%s ... %-35s|",start ,basename(file->path));
     free(start);
     if (case_sensitive){
         if (!percentage){
-            printf("%-20d |", file->data_info.alpha_upper);
-            printf("%-20d |", file->data_info.alpha_lower);
+            printf("%-26lli |", file->data_info.alpha_upper);
+            printf("%-26lli |", file->data_info.alpha_lower);
         } else {
-            printf("%-15d%3.2f |", file->data_info.alpha_upper,(float) file->data_info.alpha_upper / (int) file->size * 100.0);
-            printf("%-15d%3.2f |", file->data_info.alpha_lower,(float) file->data_info.alpha_lower / (int) file->size * 100.0);
+            printf("%-20lli%6.2f |", file->data_info.alpha_upper,  ((double)file->data_info.alpha_upper / file->size * 100.0));
+            printf("%-20lli%6.2f |", file->data_info.alpha_lower, ((double)file->data_info.alpha_lower /  file->size * 100.0));
         }
     } else {
         if (percentage){
-            printf("%-15d%3.2f |", file->data_info.alpha_lower + file->data_info.alpha_upper,(float) (file->data_info.alpha_lower +  file->data_info.alpha_upper)/ (int) file->size * 100.0);    
+            printf("%-20lli%6.2f |", file->data_info.alpha_lower + file->data_info.alpha_upper,((double)(file->data_info.alpha_lower +  file->data_info.alpha_upper)/  file->size * 100.0));    
         } else {
-            printf("%-20d |", file->data_info.alpha_lower + file->data_info.alpha_upper);    
+            printf("%-26lli |", file->data_info.alpha_lower + file->data_info.alpha_upper);    
         }
     }
 
     if (percentage){
-        printf("%-15d%3.2f |", file->data_info.digit,(float) file->data_info.digit / (int)file->size * 100.0) ;
-        printf("%-15d%3.2f |", file->data_info.punct,(float) file->data_info.punct / (int)file->size * 100.0);
-        printf("%-15d%3.2f |", file->data_info.space,(float) file->data_info.space / (int)file->size * 100.0);
-        printf("%-15d%3.2f |\n", file->data_info.other,(float) file->data_info.other / (int)file->size * 100.0);
+        printf("%-20lli%6.2f |", file->data_info.digit, ((double)file->data_info.digit / file->size * 100.0)) ;
+        printf("%-20lli%6.2f |", file->data_info.punct, ((double)file->data_info.punct / file->size * 100.0));
+        printf("%-20lli%6.2f |", file->data_info.space, ((double)file->data_info.space / file->size * 100.0));
+        printf("%-20lli%6.2f |\n", file->data_info.other, ((double)file->data_info.other / file->size * 100.0));
     } else {
-        printf("%-20d |", file->data_info.digit);
-        printf("%-20d |", file->data_info.punct);
-        printf("%-20d |", file->data_info.space);
-        printf("%-20d |\n", file->data_info.other);
+        printf("%-26lli |", file->data_info.digit);
+        printf("%-26lli |", file->data_info.punct);
+        printf("%-26lli |", file->data_info.space);
+        printf("%-26lli |\n", file->data_info.other);
     }
 
     fflush(stdout);
@@ -441,21 +245,38 @@ int print_file_short(DATA_FILE* file, bool case_sensitive, bool percentage){
 
 }
 
-int print_files_short(DATA_FILE* files, int files_size, bool sensitive, bool percentage){
+bool is_in(char** input, int input_size, char* to_find){
+    int i;
+    for (i  = 0; i < input_size; i++){
+        if (strcmp(input[i], to_find) == 0){
+            return true;
+        }
+    }
+    return false;
+}
 
-    printf("%-30s |", "Basename");
-    printf("%-20s |", "alpha_upper");
-    printf("%-20s |", "alpha_lower");
-    printf("%-20s |", "digit");
-    printf("%-20s |", "punct");
-    printf("%-20s |", "space");
-    printf("%-20s |\n", "other");
+int show(DATA_FILE* files, int files_size, bool sensitive, bool percentage, char** input, int input_size){    
+    printf(LINE);
+    printf("%-49s |", "Basename");
+    printf("%-26s |", "alpha_upper");
+    printf("%-26s |", "alpha_lower");
+    printf("%-26s |", "digit");
+    printf("%-26s |", "punct");
+    printf("%-26s |", "space");
+    printf("%-26s |\n", "other");
     printf(LINE);
     fflush(stdout);
     int i;
     for (i = 0; i < files_size; i++){
-        print_file_short(&files[i], sensitive, percentage);
-        printf(LINE);
+        if (input != NULL){
+            if(is_in(input, input_size, files[i].path)){
+                print_file_short(&files[i], sensitive, percentage);
+                printf(LINE);
+            }
+        } else {
+            print_file_short(&files[i], sensitive, percentage);
+            printf(LINE);
+        }
     }
     fflush(stdout);
     return 0;
