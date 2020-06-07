@@ -3,5 +3,5 @@ void sh_help_{command_name}() {{
 
 	{parameters}
 
-	shu_print_command_help("{command_name}", "{command_description}", {parameters_struct}, {size});
+	shu_print_command_help("{command_name}", {command_description}, {parameters_struct}, {size});
 }}

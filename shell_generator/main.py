@@ -332,7 +332,7 @@ def generate_c_help_handler_function(command_name: str, command_details: dict):
     struct_declaration = f'sh_param_details details[{size}];' if arguments is not None else ''
     parameters = '' if arguments is None else generate_c_help_handler_parameters(command_details.get('arguments'))
     parameters_struct = 'details' if arguments is not None else 'NULL'
-    command_description = f'{command_details.get("description")}' if command_details.get('description') is not None else 'NULL'
+    command_description = f'"{command_details.get("description")}"' if command_details.get('description') is not None else 'NULL'
 
     return sh_help_handler_template.format(struct_declaration=struct_declaration, size=size, parameters=parameters, parameters_struct=parameters_struct, command_name=command_name, command_description=command_description)
 

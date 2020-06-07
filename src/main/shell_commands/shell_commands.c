@@ -618,8 +618,15 @@ SH_STATE sh_handle_quit(char **words, int n_words) {
     return state;
 }
 
-
-
+void shu_print_command_help(char* command_name, char* command_description, sh_param_details* details, int details_size) {
+	printf("COMMAND: %s\n", command_name);
+	printf("DESCRIPTION: %s\n\n", command_description);
+	int i;
+	for (i = 0; i < details_size; i++) {
+		printf("PARAM NAME: %s\n", details[i].name);
+	}
+	puts("");
+}
 
 void sh_help__arguments() {
 	sh_param_details details[4];
@@ -648,7 +655,7 @@ void sh_help__arguments() {
 	details[3].default_value = NULL;
 	details[3].description = NULL;
 
-	shu_print_command_help("_arguments", "NULL", details, 4);
+	shu_print_command_help("_arguments", NULL, details, 4);
 }
 void sh_help_init() {
 	sh_param_details details[4];
@@ -741,7 +748,7 @@ void sh_help_restart() {
 	details[3].default_value = NULL;
 	details[3].description = NULL;
 
-	shu_print_command_help("restart", "NULL", details, 4);
+	shu_print_command_help("restart", NULL, details, 4);
 }
 void sh_help_pop() {
 	sh_param_details details[1];
@@ -752,21 +759,21 @@ void sh_help_pop() {
 	details[0].default_value = NULL;
 	details[0].description = NULL;
 
-	shu_print_command_help("pop", "NULL", details, 1);
+	shu_print_command_help("pop", NULL, details, 1);
 }
 void sh_help_status() {
 	
 
 	
 
-	shu_print_command_help("status", "NULL", NULL, 0);
+	shu_print_command_help("status", NULL, NULL, 0);
 }
 void sh_help_stop() {
 	
 
 	
 
-	shu_print_command_help("stop", "NULL", NULL, 0);
+	shu_print_command_help("stop", NULL, NULL, 0);
 }
 void sh_help_show() {
 	sh_param_details details[5];
@@ -801,14 +808,14 @@ void sh_help_show() {
 	details[4].default_value = "NULL";
 	details[4].description = NULL;
 
-	shu_print_command_help("show", "NULL", details, 5);
+	shu_print_command_help("show", NULL, details, 5);
 }
 void sh_help_quit() {
 	
 
 	
 
-	shu_print_command_help("quit", "NULL", NULL, 0);
+	shu_print_command_help("quit", NULL, NULL, 0);
 }
 
 void sh_help(char **words, int size) {
