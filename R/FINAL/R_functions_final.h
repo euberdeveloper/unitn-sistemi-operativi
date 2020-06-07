@@ -54,9 +54,9 @@ bool ends_with_txt(char* str);
 void init_zero(DATA_FILE* file);
 void visit_recursive(char *name, int mode, DATA_FILE* files, int* counter);
 void visit_iterative(char *name, int mode, DATA_FILE *files, int *counter);
-DATA_FILE* get_files(char** input, int input_size, int* files_size, bool iterative);
+DATA_FILE* get_files(char** input, int input_size, int* files_size, bool duplicate);
 void dealloc_FILES(DATA_FILE* files, int size);
 int print_file_short(DATA_FILE* file, bool case_sensitive, bool percentage);
-int show(DATA_FILE* files, int files_size, bool sensitive, bool percentage, char** input, int input_size);
+int show(DATA_FILE* files, int files_size, bool sensitive, bool percentage, bool detailed, char** input, int input_size);
 
 #endif
