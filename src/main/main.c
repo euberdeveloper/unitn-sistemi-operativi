@@ -22,15 +22,15 @@ int main(int argc, char** argv) {
         start_analizer(main_pid);
     }
     else {
-        /* fk_close(fk_main_to_analyzer_pipe[READ_END]);
-        fk_close(fk_analyzer_to_main_pipe[WRITE_END]); */
+        fk_close(fk_main_to_analyzer_pipe[READ_END]);
+        fk_close(fk_analyzer_to_main_pipe[WRITE_END]);
 
         if (fk_fork() == 0) {
             start_reporter(main_pid);
         }
         else {
-            /* fk_close(fk_main_to_reporter_pipe[READ_END]);  
-            fk_close(fk_reporter_to_main_pipe[WRITE_END]); */
+            fk_close(fk_main_to_reporter_pipe[READ_END]);  
+            fk_close(fk_reporter_to_main_pipe[WRITE_END]);
 
             fk_set_nonblock(fk_analyzer_to_main_pipe[READ_END]);
             fk_set_nonblock(fk_reporter_to_main_pipe[READ_END]);
