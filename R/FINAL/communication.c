@@ -26,7 +26,7 @@ typedef struct{
 typedef struct{
     char** files_paths;
     RANGE* ranges;
-    int size_ranges_files; // they are the same size ///ashdgashdgashgdahsgdahsgdashdgashdgashdg
+    int size_ranges_files; // they are the same size 
 }Q_INPUT;
 
 
@@ -46,11 +46,6 @@ P_INPUT* get_P_input(DATA_FILE* files, int files_size, int number_of_P){
         } else {
             data_file_to_alloc = divide;
         }
-        //ret_Ps[p_index].files_indexes = (DATA_FILE*) malloc (sizeof(DATA_FILE) * data_file_to_alloc);
-        
-        //printf("data file to alloc = %d\n", data_file_to_alloc);
-        //ret_Ps[p_index].files_size = data_file_to_alloc;
-        //ret_Ps[p_index].files_indexes = files + next_file_index;
         
         ret_Ps[p_index].paths_sizes_size = data_file_to_alloc;
         ret_Ps[p_index].paths = (char**) malloc (sizeof(char*) * data_file_to_alloc);
@@ -126,17 +121,7 @@ int main(int argc, char **argv)
     DATA_FILE *files = get_files(&argv[1], argc - 1, &files_size, false);
     
     P_INPUT* p_s = get_P_input(files, files_size, 3);
-    
-    /*
-    for (i = 0; i < 3; i++){
-        printf("P%d possiede:\n", i);
-        for (j = 0; j < p_s[i].paths_sizes_size; j++){
-            printf("--->%s of size(%lli)\n", p_s[i].paths[j], p_s[i].sizes[j]);
-        }
-    }*/
-    
-    
-    
+
     for (i = 0; i < 3; i++){
         printf("P%d possiede:\n", i);
         int j;
@@ -153,33 +138,10 @@ int main(int argc, char **argv)
                 printf("Read  from \'%d\' to \'%d\'\n", q_s[z].ranges[k].start, q_s[z].ranges[k].end);
             }
         }
-        //dealloc_Q(q_s, 4);
-        //free(q_s);
+       
     }
     
-    /*
-    for (i = 0; i < files_size; i++){
-        printf(" size = %lli\n", files[i].size);
-    }*/
-
-   // show(files, files_size, true, true, NULL, 0);
-    
-    //files[0].data_info.alpha_lower++;
-    //p_s[2].files_indexes[2].data_info.alpha_lower++;
-    //printf("---> %lli\n",(DATA_FILE)*p_s[0].files_indexes[0].data_info.aplha_lower);
-    //printf("---> %lli\n",files[0].data_info.alpha_lower);
-  //  show(files, files_size, true, true, NULL, 0);
-    /*
-    int * a = malloc(sizeof(int) * 4);
-    int * b = malloc(sizeof(int) * 4);
-    a[0] = 1;
-    a[1] = 0;
-    b = a+1;
-    b[0] = 2;
-    printf("a[0] = %d\n",a[0]);
-    printf("a[1] = %d\n",a[1]);
-    */
-
+ 
     dealloc_FILES(files, files_size);
     time_t end = time(NULL);
     printf("Elapsed time = %d ", (int)(end - start));
