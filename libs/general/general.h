@@ -8,6 +8,19 @@
 #include <stdlib.h>
 #include "../colour/colour.h"
 
+/* DEFINES */
+
+#define READ_END 0
+#define WRITE_END 1
+
+#define ERROR_FORK 1
+#define ERROR_PIPE_INIT 2
+#define ERROR_PIPE_READ 2
+#define ERROR_DESCRIPTOR_CLOSE 4
+#define ERROR_FCNTL 5
+#define ERROR_SIGNAL 6
+#define ERROR_THREAD_CREATE 7
+
 /* ENUMS */
 
 /**

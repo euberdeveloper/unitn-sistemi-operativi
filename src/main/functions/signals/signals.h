@@ -4,7 +4,8 @@
 /* IMPORTS */
 
 #include <signal.h>
-#include "../../../libs/general/general.h"
+#include <unistd.h>
+#include "../../../../libs/general/general.h"
 
 /* VARIABLES */
 

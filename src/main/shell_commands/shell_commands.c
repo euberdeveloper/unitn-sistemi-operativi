@@ -664,7 +664,7 @@ void sh_loop() {
     int n_words;
     char *command, **words;
 	
-	int history_size = 8, history_index = 0, temp;
+	int history_size = 8, history_index = 0, length;
 	char** history = malloc(history_size * sizeof(char*));
 
     sh_last_command = strdup("");
@@ -682,12 +682,11 @@ void sh_loop() {
 
 		if (history_index == history_size) {
 			history_size *= 2;
-			history = realloc(history, history_size);
+			history = realloc(history, history_size * sizeof(char*));
 		}
-		temp = strlen(command);
-		history[history_index] = malloc(temp * sizeof(char));
-		strncpy(history[history_index], command, temp - 1);
-		history[history_index][temp - 1] = '\0';
+
+		history[history_index] = strdup(command);
+		history[history_index][strlen(command) - 1] = '\0';
 		history_index++;
 
         words = txt_splitline(command, &n_words);

@@ -3,18 +3,18 @@
 
 /* IMPORTS */
 
-#define _GNU_SOURCE 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "../../../libs/general/general.h" 
+
 #include <unistd.h>
-#include "../../../libs/general/general.h"
-#include "../signals/signals.h"
+#include <pthread.h>
+#include <errno.h>
+#include <string.h>
+
+#include "../forking/forking.h"
+#include "signals/signals.h"
 
 /* EXTERNS */
 
-extern int analyzer_pipe[2];
-extern int reporter_pipe[2];
 extern char* sh_last_command;
 
 /* FUNCTIONS */
@@ -28,5 +28,8 @@ SH_STATE status();
 SH_STATE stop();
 SH_STATE show(bool sensitive, bool percentage, bool realtime, bool detailed, char** files, int files_size);
 SH_STATE quit();
+
+void init_analyzer_output_thread();
+void init_reporter_output_thread();
 
 #endif
