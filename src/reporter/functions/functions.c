@@ -25,16 +25,18 @@ SH_STATE arguments(bool local_is_shell, int local_main_pid, bool sensitive, bool
 }
 
 SH_STATE show(bool sensitive, bool percentage, bool realtime, bool detailed, char** files, int files_size) {
-    printf("s = %d, p = %d, r = %d, d = %d\n", sensitive, percentage, realtime, detailed);
-    printf("[\n");
-    for (int i = 0; i < files_size; i++) {
-        printf("%s\n", files[i]);
-    }
-    printf("]\n");
+    DATA_FILE *shits = (DATA_FILE*) malloc(sizeof(DATA_FILE) * 2);
+    shits[0].path = "primo";
+    init_zero(&shits[0]);
+    shits[1].path = "secondo aòlskdjf òlsakjf aòls jfaòlkds jfòlkdsa jfòlsakj fòlksa jfdòlkasj flksa dfòl kjsafòlkdsalkf";
+    init_zero(&shits[1]);
+
+    show_todo(shits, 2, sensitive, percentage, detailed, files, files_size);
 
     ende_mitteilen();
     return SH_CONTINUE;
 }
+
 SH_STATE quit() {
     printf("quit\n");
     ende_mitteilen();
