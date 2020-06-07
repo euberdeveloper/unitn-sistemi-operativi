@@ -86,6 +86,30 @@ Q_INPUT* get_q_input(P_INPUT* p, int number_of_q){
 }
 
 
+void A_to_P (P_INPUT* p, int p_fd){
+    int i;
+    write(p_fd, &p->paths_sizes_size, sizeof(int));
+    for (i = 0; i < p->paths_sizes_size; i++){
+        int len = strlen(p->paths[i]);
+        write(p_fd, &len, sizeof(int));
+        write(p_fd, p->paths[i], len);
+        write(p_fd, &p->sizes[i], sizeof(unsigned long long));
+    }
+}
+
+void P_to_Q (Q_INPUT* q, int q_fd){
+    int i;
+    write(q_fd, &q->size_ranges_files, sizeof(int));
+    for (i = 0; i < q->size_ranges_files; i++){
+        int len = strlen(q->files_paths[i]);
+        write(q_fd, &len , sizeof(int));
+        write(q_fd, q->files_paths[i], strlen(q->files_paths[i]));
+        write(q_fd, &q->ranges->start, sizeof(int));
+        write(q_fd, &q->ranges->end, sizeof(int));
+    }
+}
+
+
 
 void dealloc_P(P_INPUT* p, int number_of_p){
     int i;
