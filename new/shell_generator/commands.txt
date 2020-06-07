@@ -1,0 +1,82 @@
+Note:
+    -Non esistono parametri posizionali, solo nominali
+    -Tutti i parametri devono avere nomi validi come variabili in c
+    -Tutti i parametri booleani hanno come valore di default false e sono quindi opzionali
+    -Manca da fare il parametro array opzionale nella shell
+
+ANALIZER
+
+init: 
+    -n --p_number: int 1-?
+    -m --q_number: int 1-?
+    -i --inputs: array<string> (file.txt directory ...)
+    -r --recursive: boolean
+
+    tutti obbligatori
+
+    >>Fa partire il tutto con n m ed i. Se r è specificato, le cartelle saranno analizzate ricorsivamente
+
+set:
+    -n --p_number: int 1-?
+    -m --q_number: int 1-?
+    -i --inputs: array<string> (file.txt directory ...)
+    -r --recursive: boolean
+    -k --keep: boolean
+
+    nessuno obbligatorio
+
+    >>Cambia i valori n, m e/o i. Se -k è attivo, il file di testo è solamente aggiunto agli altri
+
+restart:
+    -n --p_number: int 1-?
+    -m --q_number: int 1-?
+    -i --inputs: array<string> (file.txt directory ...)
+    -r --recursive: boolean
+
+    nessuno obbligatorio
+
+    >>Fa ripartire tutto, lasciando come prima gli argomenti non passati
+
+pop:
+    -i --inputs: array<string> (file.txt directory ...)
+
+    Tutti obbligatori
+
+    >>Rimuove i file/cartelle passati come argomento
+
+stop:
+    >> Ferma tutto
+
+quit:
+    >> Esce dal programma, chiedendo conferma se A sta andando
+
+./analizer ...args
+    Viene considerato come il comando init se gli vengono passati argomenti, se nessun argomento gli viene passato non fa nulla
+
+REPORTER
+
+show:
+    -s --sensitive: boolean
+    -p --percentage: boolean
+    -r --realtime: boolean
+    -d --detailed: boolean
+    -f --files: array<string>
+
+    Nessuno obbligatorio
+
+    >>Guarda la named pipe e si aggiorna in base a quella. Poi mostra in tabella i dati. Se sensitive mostra maiuscole e minuscole separate.
+      Se -p calcola anche la percentuale oltre che le frequenze. Se -r rimane lì ed ogni x millisecondi si aggiorna. Un SIGINT per fermarla.
+      Se -d mostra oltre che il totale anche i dati per singolo file. Se -f considera solo i file/cartelle passati
+
+quit:
+    >> Esce dal programma
+
+./reporter ...args
+    Viene considerato come il comando show se gli viene passato anche l'argomento -d --do, altrimenti non fa nulla
+
+MAIN
+    
+Ha i comandi di ANALIZER e SHOW messi assieme. Quit deriva da A e non R.
+
+./main ...args
+    Viene considerato come il comando init se gli vengono passati argomenti, se nessun argomento gli viene passato non fa nulla
