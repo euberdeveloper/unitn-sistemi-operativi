@@ -16,6 +16,8 @@
 void shu_unknown_command(char *command);
 void shu_unknown_argument(char *command, char* argument, bool write);
 void shu_value_without_argument(char* value, bool write);
+void shu_help_misplaced_argument(char* value);
+void shu_help_unknown_command(char* command);
 
 bool shu_check_noval(const char *command, const char *argument, int size, int *i, bool write);
 bool shu_check_noval_array(const char *command, const char *argument, bool is_assigned, bool write);

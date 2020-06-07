@@ -4,6 +4,9 @@ SH_STATE sh_parse_command(char **words, int size) {{
     if (size > 0) {{
         char *command = words[0];
 
+        if (strcmp(command, "help") == 0)  {{
+			sh_help(words, size);
+		}}
         {commands_conditions}
         else {{
             shu_unknown_command(command);

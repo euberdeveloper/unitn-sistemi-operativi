@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+#TODO prompt symbol with commands ecc..
+
 import sys
 import os
 import json
@@ -12,6 +14,9 @@ __dirname = os.path.dirname(os.path.realpath(__file__))
 HEADER_TEMPLATE = f'{__dirname}/templates/header.template.txt'
 C_TEMPLATE = f'{__dirname}/templates/c.template.txt'
 SH_PARSE_COMMAND_TEMPLATE = f'{__dirname}/templates/sh_parse_command.template.txt'
+SH_HELP_TEMPLATE = f'{__dirname}/templates/sh_help.template.txt'
+SH_HELP_HANDLER_TEMPLATE = f'{__dirname}/templates/sh_help_handler.template.txt'
+SH_HELP_HANDLER_PARAMETER_TEMPLATE = f'{__dirname}/templates/sh_help_handler_parameter.template.txt'
 SH_HANDLE_COMMAND_TEMPLATE = f'{__dirname}/templates/sh_handle_command.template.txt'
 SH_HANDLE_COMMAND_CONDITION_TEMPLATE = f'{__dirname}/templates/sh_handle_command_condition.template.txt'
 SH_HANDLE_COMMAND_ARRAY_ASSIGNMENT_TEMPLATE = f'{__dirname}/templates/sh_handle_command_array_assignment.template.txt'
@@ -31,6 +36,15 @@ with open(C_TEMPLATE) as c_template_file:
 
 with open(SH_PARSE_COMMAND_TEMPLATE) as sh_parse_command_template_file:
     sh_parse_command_template = sh_parse_command_template_file.read()
+
+with open(SH_HELP_TEMPLATE) as sh_help_template_file:
+    sh_help_template = sh_help_template_file.read()
+
+with open(SH_HELP_HANDLER_TEMPLATE) as sh_help_handler_template_file:
+    sh_help_handler_template = sh_help_handler_template_file.read()
+
+with open(SH_HELP_HANDLER_PARAMETER_TEMPLATE) as sh_help_handler_parameter_template_file:
+    sh_help_handler_parameter_template = sh_help_handler_parameter_template_file.read()
 
 with open(SH_HANDLE_COMMAND_TEMPLATE) as sh_handle_command_template_file:
     sh_handle_command_template = sh_handle_command_template_file.read()
@@ -121,6 +135,13 @@ Path(OUTPUT_PATH).mkdir(parents=True, exist_ok=True)
 
 # Generate header file
 
+def generate_header_declared_help_function(command_name: str):
+    return f'void sh_help_{purge_name(command_name)}();'
+
+def generate_header_declared_help_functions(commands: dict):
+    functions = [generate_header_declared_help_function(command_name) for command_name, _ in commands.items()]
+    return '\n'.join(functions)
+
 def generate_header_extern_function(command_details: dict):
     function_name = command_details.get('function')
     arguments = command_details.get('arguments')
@@ -144,8 +165,9 @@ def generate_header_declared_functions(commands: dict):
 
 def generate_header_file(commands: dict):
     extern_functions = generate_header_extern_functions(commands)
+    declared_help_functions = generate_header_declared_help_functions(commands)
     declared_functions = generate_header_declared_functions(commands)
-    return header_template.format(extern_functions=extern_functions, declared_functions=declared_functions)
+    return header_template.format(extern_functions=extern_functions, declared_functions=declared_functions, declared_help_functions=declared_help_functions)
 
 h_output = f'{OUTPUT_PATH}/{library_name(OUTPUT_PATH)}.h'
 with open(h_output, 'w') as h_output_file:
@@ -285,21 +307,68 @@ def generate_c_handle_command_functions(commands: dict):
     functions = [generate_c_handle_command_function(command_name, command_details) for command_name, command_details in commands.items()]
     return '\n'.join(functions)
 
+def generate_c_help_handler_parameter(argument_name: str, argument_details: dict, index: int):
+    alias_val = argument_details.get('alias')
+    type_val = argument_details.get('type')
+    default_val = argument_details.get('default')
+    description_val = argument_details.get('description')
+    
+    name = f'"{argument_name}"'
+    alias = f'"{alias_val}"' if alias_val is not None else 'NULL'
+    type = f'"{type_val}"'
+    default_value = f'"{default_val}"' if default_val is not None else 'NULL'
+    description = f'"{description_val}"' if description_val is not None else 'NULL'
+
+    return sh_help_handler_parameter_template.format(index=index, name=name, alias=alias, type=type, default_value=default_value, description=description)
+
+def generate_c_help_handler_parameters(arguments: dict):
+    parameters = [generate_c_help_handler_parameter(argument_name, argument_details, index) for index, (argument_name, argument_details) in enumerate(arguments.items())]
+    return tab('\n'.join(parameters), 1)
+
+def generate_c_help_handler_function(command_name: str, command_details: dict):
+    arguments = command_details.get('arguments')
+
+    size = len(arguments.keys()) if arguments is not None else 0
+    struct_declaration = f'sh_param_details details[{size}];' if arguments is not None else ''
+    parameters = '' if arguments is None else generate_c_help_handler_parameters(command_details.get('arguments'))
+    parameters_struct = 'details' if arguments is not None else 'NULL'
+    command_description = f'{command_details.get("description")}' if command_details.get('description') is not None else 'NULL'
+
+    return sh_help_handler_template.format(struct_declaration=struct_declaration, size=size, parameters=parameters, parameters_struct=parameters_struct, command_name=command_name, command_description=command_description)
+
+def generate_c_help_handler_functions(commands: dict):
+    functions = [generate_c_help_handler_function(command_name, command_details) for command_name, command_details in commands.items()]
+
+    return '\n'.join(functions)
+
+def generate_c_help_function(commands: dict):
+    command_names = commands.keys()
+    gen_condition = lambda command_name, index: get_conditional(get_strcmp_condition('command', f'"{command_name}"'), f'sh_help_{purge_name(command_name)}();', index=index)
+
+    all_commands = tab('\n'.join([f'sh_help_{purge_name(command_name)}();' for command_name, _ in commands.items()]), 2)
+    conditions = [gen_condition(command_name, index) for index, command_name in enumerate(command_names)]
+    command_conditions = tab('\n'.join(conditions), 2)
+    unknown_costruct = 'if' if len(commands) == 0 else 'else'
+
+    return sh_help_template.format(all_commands=all_commands, command_conditions=command_conditions, unknown_costruct=unknown_costruct)
+
 def generate_c_parse_command_function(commands: dict):
     command_names = [key for key in commands.keys() if key != '_arguments']
-    gen_condition = lambda command_name, index: get_conditional(get_strcmp_condition('command', f'"{command_name}"'), f'state = sh_handle_{purge_name(command_name)}(words, size);', index=index)
+    gen_condition = lambda command_name: get_conditional(get_strcmp_condition('command', f'"{command_name}"'), f'state = sh_handle_{purge_name(command_name)}(words, size);', index=1)
 
-    conditions = [gen_condition(command_name, index) for index, command_name in enumerate(command_names)]
+    conditions = [gen_condition(command_name) for command_name in command_names]
     commands_conditions = tab('\n'.join(conditions), 2)
 
-    return sh_parse_command_template.format(commands_conditions = commands_conditions)
+    return sh_parse_command_template.format(commands_conditions=commands_conditions)
 
 def generate_c_file(name: str, commands: dict):
     include = f'{name}.h'
     prompt_symbol = commands.get('promptSymbol') if commands.get('promptSymbol') else '>> '
+    help_handler_functions = generate_c_help_handler_functions(commands)
+    help_function = generate_c_help_function(commands)
     parse_command_function = generate_c_parse_command_function(commands)
     handle_command_functions = generate_c_handle_command_functions(commands)
-    return c_template.format(include = include, prompt_symbol = prompt_symbol, parse_command_function = parse_command_function, handle_command_functions = handle_command_functions)
+    return c_template.format(include=include, prompt_symbol=prompt_symbol, parse_command_function=parse_command_function, help_handler_functions=help_handler_functions, help_function=help_function, handle_command_functions=handle_command_functions)
 
 c_output = f'{OUTPUT_PATH}/{library_name(OUTPUT_PATH)}.c'
 with open(c_output, 'w') as c_output_file:

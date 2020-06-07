@@ -24,6 +24,18 @@ void shu_value_without_argument(char* value, bool write) {
     }
 }
 
+void shu_help_misplaced_argument(char* value) {
+    char *message;
+    asprintf(&message, "help: misplaced argument, %s ignored", value);
+    log_warning_del_ctx(message, strdup("SHELL"));
+}
+
+void shu_help_unknown_command(char* command) {
+    char *message;
+    asprintf(&message, "help: unknown argument %s", command);
+    log_error_del_ctx(message, strdup("SHELL"));
+}
+
 bool shu_check_noval(const char *command, const char *argument, int size, int *i, bool write) {
     bool result = true;
     

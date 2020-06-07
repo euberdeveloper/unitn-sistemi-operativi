@@ -32,23 +32,28 @@
                 "type": "int",
                 "alias": "n",
                 "default": 3,
-                "min": 1
+                "min": 1,
+                "description": "The number of P processes. It must be at least 1."
             },
             "q-number": {
                 "type": "int",
                 "alias": "m",
                 "default": 4,
-                "min": 1
+                "min": 1,
+                "description": "The number of Q processes. It must be at least 1."
             },
             "inputs": {
                 "type": "array<char*>",
-                "alias": "i"
+                "alias": "i",
+                "description": "The inputs as file or directory paths."
             },
             "recursive": {
                 "type": "bool",
-                "alias": "r"
+                "alias": "r",
+                "description": "If the directories will be read recusively."
             }
-        }
+        },
+        "description": "Initializes the shit"
     },
     "set": {
         "function": "set",
@@ -57,28 +62,34 @@
                 "type": "int",
                 "alias": "n",
                 "default": 0,
-                "min": 1
+                "min": 1,
+                "description": "The number of P processes. It must be at least 1."
             },
             "q-number": {
                 "type": "int",
                 "alias": "m",
                 "default": 0,
-                "min": 1
+                "min": 1,
+                "description": "The number of Q processes. It must be at least 1."
             },
             "inputs": {
                 "type": "array<char*>",
                 "alias": "i",
-                "default": "NULL"
+                "default": "NULL",
+                "description": "The inputs as file or directory paths"
             },
             "recursive": {
                 "type": "bool",
-                "alias": "r"
+                "alias": "r",
+                "description": "If the directories will be read recusively"
             },
             "keep": {
                 "type": "bool",
-                "alias": "k"
+                "alias": "k",
+                "description": "If instead of reset the precedent inputs the new inputs will be only added"
             }
-        }
+        },
+        "description": "Initializes the shit"
     },
     "restart": {
         "function": "restart",
