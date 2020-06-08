@@ -3,16 +3,20 @@
 
 #define LINE "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
 
+
+//Given a DATA_FILE retrurs the sum of all DATA_INFO paremeters
 unsigned long long int total_letter_from_file(DATA_FILE *file)
 {
     return (file->data_info.alpha_lower + file->data_info.alpha_upper + file->data_info.digit + file->data_info.punct + file->data_info.space + file->data_info.other);
 }
 
+//Given a string returs true if it ends with ".txt"
 bool ends_with_txt(char *str)
 {
     return (strcmp(&str[strlen(str) - 4], TXT) == 0);
 }
 
+//initialize all parameters of DATA_INFO to 0
 void init_zero(DATA_FILE *file)
 {
     file->data_info.alpha_lower = 0;
@@ -23,6 +27,7 @@ void init_zero(DATA_FILE *file)
     file->data_info.space = 0;
 }
 
+//Given a path, checks if that path belongs to one of the pahts insides the DATA_FILE array
 bool is_in_datafile(DATA_FILE *files, int files_size, char *element)
 {
     int i;
@@ -36,6 +41,7 @@ bool is_in_datafile(DATA_FILE *files, int files_size, char *element)
     return false;
 }
 
+//checks if the path belongs to a readable file which is also not a directory
 bool is_readable(char *path)
 {
     bool res;
@@ -58,6 +64,7 @@ bool is_readable(char *path)
     return res;
 }
 
+//Visit a directory recursively, if mode is equal to 1 , it also stores the path of a readable file inside the DATA_FILES array
 void visit_recursive(char *name, int mode, DATA_FILE *files, int *counter)
 {
     linux_dirent *current_dir;
@@ -116,6 +123,8 @@ void visit_recursive(char *name, int mode, DATA_FILE *files, int *counter)
     return;
 }
 
+//Given a lists of paths checks if they are less general than the str2's path, if true it sets appereance[i] -> 1 so that
+//after when the DATA_FILE[] is created it skips duplicated file
 int is_duplicates(char** inputs, int input_size, char* str2, int str2_index, int* appereance){
     int i;
     bool found = false;
@@ -132,6 +141,7 @@ int is_duplicates(char** inputs, int input_size, char* str2, int str2_index, int
     return found; 
 }
 
+//Given a lists of path it returs a list of those paths without the duplicates
 char** parse_input_no_dup(char** input, int input_size, int* new_input_size){
     int* appereance;
     appereance = (int*) malloc (sizeof(int) * input_size );
@@ -164,7 +174,7 @@ char** parse_input_no_dup(char** input, int input_size, int* new_input_size){
     return ret;
 }
 
-
+//Returns a DATA_FILE[] from a list of paths with or without the duplicates
 DATA_FILE *get_files(char **input, int input_size, int *files_size, bool duplicate)
 {
     int to_alloc = 0;
@@ -235,7 +245,7 @@ DATA_FILE *get_files(char **input, int input_size, int *files_size, bool duplica
 }
 
 
-
+//Dealloc a DATA_FILE[]
 void dealloc_FILES(DATA_FILE *files, int size)
 {
     int i;
@@ -246,6 +256,7 @@ void dealloc_FILES(DATA_FILE *files, int size)
     free(files);
 }
 
+//Given a path returs the last ten letters of that path, if the path's lenght is less than 10 returs the original path 
 char *first_ten(char *str)
 {
     char *ret;
@@ -261,6 +272,7 @@ char *first_ten(char *str)
     return ret;
 }
 
+//Given a DATA_FILE it prints the informations on the stdout in one line
 int print_file_short(DATA_FILE *file, bool case_sensitive, bool percentage)
 {
 
@@ -317,6 +329,7 @@ int print_file_short(DATA_FILE *file, bool case_sensitive, bool percentage)
     return 0;
 }
 
+//simply checks if a string is in a list of strings
 bool is_in(char **input, int input_size, char *to_find)
 {
     bool res = false;
@@ -332,6 +345,7 @@ bool is_in(char **input, int input_size, char *to_find)
     return res;
 }
 
+//print all files informations on stdout int one line 
 void print_files_one_line(DATA_FILE *files, int files_size, bool sensitive, bool percentage, bool detailed, char **input, int input_size)
 {
     int i, j;
@@ -419,6 +433,7 @@ void print_files_one_line(DATA_FILE *files, int files_size, bool sensitive, bool
     fflush(stdout);
 }
 
+//print the files informations in a table
 int show_todo(DATA_FILE *files, int files_size, bool sensitive, bool percentage, bool detailed, char **input, int input_size)
 {
 
