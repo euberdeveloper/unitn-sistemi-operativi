@@ -4,13 +4,13 @@
 #define LINE "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
 
 
-//Given a DATA_FILE retrurs the sum of all DATA_INFO paremeters
+//Given a DATA_FILE retrurns the sum of all DATA_INFO paremeters
 unsigned long long int total_letter_from_file(DATA_FILE *file)
 {
     return (file->data_info.alpha_lower + file->data_info.alpha_upper + file->data_info.digit + file->data_info.punct + file->data_info.space + file->data_info.other);
 }
 
-//Given a string returs true if it ends with ".txt"
+//Given a string returns true if it ends with ".txt"
 bool ends_with_txt(char *str)
 {
     return (strcmp(&str[strlen(str) - 4], TXT) == 0);
