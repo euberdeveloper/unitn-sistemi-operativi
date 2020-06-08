@@ -186,33 +186,126 @@ char *txt_readline_special(char** history, int history_size) {
     return line;
 }
 
+bool txt_char_is_among(char ch, const char* chars) { // TODO static
+    bool result = false;
+    
+    int i;
+    for (i = 0; chars[i] != '\0' && !result; i++) {
+        if (ch == chars[i]) {
+            result = true;
+        }
+    }
+
+    return result;
+}
+
 char **txt_splitline(char *line, int *size) {
-    int index = 0;
+    int index = -1;
     char **words;
-    char *token;
+
+    char* word;
+    int word_size, word_index;
+
+    bool double_apix = false;
 
     *size = _TXT_SPLITLINE_INITIAL_BUFFER_SIZE;
     words = (char**) malloc(*size * sizeof(char*));
+
+    word_size = _TXT_SPLITLINE_INITIAL_BUFFER_SIZE;
+    word = (char*) malloc(word_size * sizeof(char));
+    word_index = -1;
 
     if (words == NULL) {
         gn_abort("Error in allocating words", 1);
     }
 
-    for(token = strtok(line, _TXT_SPLIT_DELIMITERS); token != NULL; token = strtok(NULL, _TXT_SPLIT_DELIMITERS)) {
-        words[index++] = strdup(token);
+    int i;
+    for (i = 0; line[i] != '\0'; i++) {
+        if (!double_apix && (txt_char_is_among(line[i], _TXT_SPLIT_DELIMITERS) || line[i] == '"')) {
+            if (word_index > -1) {
+                if (++word_index >= word_size) {
+                    word_size++;
+                    word = realloc(word, word_size * sizeof(char));
+                }
 
-        if (index >= *size) {
-            *size *= 2;
-            words = (char**) realloc(words, *size * sizeof(char*));
-            
-            if(!words) {
-                gn_abort("Error in reallocating words", 1);
+                word[word_index] = '\0';
+
+                if (++index >= *size) {
+                    *size *= 2;
+                    words = realloc(words, *size * sizeof(char*));
+                }
+
+                words[index] = word;
+
+                word_size = _TXT_SPLITLINE_INITIAL_BUFFER_SIZE;
+                word = (char*) malloc(word_size * sizeof(char));
+                word_index = -1;
             }
+
+            if (line[i] == '"') {
+                double_apix = true;
+            }
+        }
+        else if (double_apix && line[i] == '"') {
+            if (word_index > -1) {
+                if (++word_index >= word_size) {
+                    word_size++;
+                    word = realloc(word, word_size * sizeof(char));
+                }
+
+                word[word_index] = '\0';
+
+                if (++index >= *size) {
+                    *size *= 2;
+                    words = realloc(words, *size * sizeof(char*));
+                }
+
+                words[index] = word;
+
+                word_size = _TXT_SPLITLINE_INITIAL_BUFFER_SIZE;
+                word = (char*) malloc(word_size * sizeof(char));
+                word_index = -1;
+            }
+
+            double_apix = false;
+        }
+        else if (double_apix && line[i] == '\\' && (line[i + 1] == '"' || line[i + 1] == '\\')) {
+            i++;
+
+            if (++word_index >= word_size) {
+                word_size *= 2;
+                word = realloc(word, word_size * sizeof(char));
+            }
+
+            word[word_index] = line[i];
+        }
+        else {
+            if (++word_index >= word_size) {
+                word_size *= 2;
+                word = realloc(word, word_size * sizeof(char));
+            }
+
+            word[word_index] = line[i];
         }
     }
 
-    *size = index;
-    words = realloc(words, *size * sizeof(char*));
+    if (word_index > -1) {
+        if (++word_index >= word_size) {
+            word_size++;
+            word = realloc(word, word_size * sizeof(char));
+        }
+
+        word[word_index] = '\0';
+
+        if (++index >= *size) {
+            *size *= 2;
+            words = realloc(words, *size * sizeof(char*));
+        }
+
+        words[index] = word;
+    }
+
+    *size = index + 1;
 
     return words;
 }
