@@ -23,6 +23,7 @@ SH_STATE sh_handle__arguments(char **words, int n_words) {
 	bool percentage = false;
 	bool realtime = false;
 	bool detailed = false;
+	bool total = false;
 	int files_size = 0;
 	int files_index = 0;
 	char* *files = NULL;
@@ -80,6 +81,13 @@ SH_STATE sh_handle__arguments(char **words, int n_words) {
 			        detailed = true;         
 			    }
 			}
+			else if (strcmp(argument, "total") == 0 || (is_alias && strcmp(argument, "t") == 0)) {
+			    
+			    if (!finish) {
+			        
+			        total = true;         
+			    }
+			}
 			else if (strcmp(argument, "files") == 0 || (is_alias && strcmp(argument, "f") == 0)) {
 			    finish = !shu_check_noval("_arguments", "files", n_words, &i, false);
 			    if (!finish) {
@@ -115,9 +123,10 @@ SH_STATE sh_handle__arguments(char **words, int n_words) {
 	
 	
 	
+	
 
     if (!finish) {  
-        state = arguments(is_shell, main_pid, sensitive, percentage, realtime, detailed, files, files_index);
+        state = arguments(is_shell, main_pid, sensitive, percentage, realtime, detailed, total, files, files_index);
     }
 
     return state;
@@ -132,6 +141,7 @@ SH_STATE sh_handle_show(char **words, int n_words) {
 	bool percentage = false;
 	bool realtime = false;
 	bool detailed = false;
+	bool total = false;
 	int files_size = 0;
 	int files_index = 0;
 	char* *files = NULL;
@@ -175,6 +185,13 @@ SH_STATE sh_handle_show(char **words, int n_words) {
 			        detailed = true;         
 			    }
 			}
+			else if (strcmp(argument, "total") == 0 || (is_alias && strcmp(argument, "t") == 0)) {
+			    
+			    if (!finish) {
+			        
+			        total = true;         
+			    }
+			}
 			else if (strcmp(argument, "files") == 0 || (is_alias && strcmp(argument, "f") == 0)) {
 			    finish = !shu_check_noval("show", "files", n_words, &i, true);
 			    if (!finish) {
@@ -208,9 +225,10 @@ SH_STATE sh_handle_show(char **words, int n_words) {
 	
 	
 	
+	
 
     if (!finish) {  
-        state = show(sensitive, percentage, realtime, detailed, files, files_index);
+        state = show(sensitive, percentage, realtime, detailed, total, files, files_index);
     }
 
     return state;
@@ -249,13 +267,147 @@ SH_STATE sh_handle_quit(char **words, int n_words) {
 }
 
 
+void sh_help__arguments() {
+	sh_param_details details[8];
+
+	details[0].name = "is-shell";
+	details[0].alias = NULL;
+	details[0].type = "bool";
+	details[0].default_value = NULL;
+	details[0].description = NULL;
+	
+	details[1].name = "main-pid";
+	details[1].alias = NULL;
+	details[1].type = "int";
+	details[1].default_value = "-1";
+	details[1].description = NULL;
+	
+	details[2].name = "sensitive";
+	details[2].alias = "s";
+	details[2].type = "bool";
+	details[2].default_value = NULL;
+	details[2].description = NULL;
+	
+	details[3].name = "percentage";
+	details[3].alias = "p";
+	details[3].type = "bool";
+	details[3].default_value = NULL;
+	details[3].description = NULL;
+	
+	details[4].name = "realtime";
+	details[4].alias = "r";
+	details[4].type = "bool";
+	details[4].default_value = NULL;
+	details[4].description = NULL;
+	
+	details[5].name = "detailed";
+	details[5].alias = "d";
+	details[5].type = "bool";
+	details[5].default_value = NULL;
+	details[5].description = NULL;
+	
+	details[6].name = "total";
+	details[6].alias = "t";
+	details[6].type = "bool";
+	details[6].default_value = NULL;
+	details[6].description = NULL;
+	
+	details[7].name = "files";
+	details[7].alias = "f";
+	details[7].type = "array<char*>";
+	details[7].default_value = "NULL";
+	details[7].description = NULL;
+
+	//shu_print_command_help("_arguments", NULL, details, 8);
+}
+void sh_help_show() {
+	sh_param_details details[6];
+
+	details[0].name = "sensitive";
+	details[0].alias = "s";
+	details[0].type = "bool";
+	details[0].default_value = NULL;
+	details[0].description = NULL;
+	
+	details[1].name = "percentage";
+	details[1].alias = "p";
+	details[1].type = "bool";
+	details[1].default_value = NULL;
+	details[1].description = NULL;
+	
+	details[2].name = "realtime";
+	details[2].alias = "r";
+	details[2].type = "bool";
+	details[2].default_value = NULL;
+	details[2].description = NULL;
+	
+	details[3].name = "detailed";
+	details[3].alias = "d";
+	details[3].type = "bool";
+	details[3].default_value = NULL;
+	details[3].description = NULL;
+	
+	details[4].name = "total";
+	details[4].alias = "t";
+	details[4].type = "bool";
+	details[4].default_value = NULL;
+	details[4].description = NULL;
+	
+	details[5].name = "files";
+	details[5].alias = "f";
+	details[5].type = "array<char*>";
+	details[5].default_value = "NULL";
+	details[5].description = NULL;
+
+	//shu_print_command_help("show", NULL, details, 6);
+}
+void sh_help_quit() {
+	
+
+	
+
+	//shu_print_command_help("quit", NULL, NULL, 0);
+}
+
+void sh_help(char **words, int size) {
+	if (size == 1) {
+		sh_help__arguments();
+		sh_help_show();
+		sh_help_quit();
+	}
+	else {
+        char* command = words[1];
+
+		int i;
+		for (i = 2; i < size; i++) {
+			shu_help_misplaced_argument(words[i]);
+		}
+
+		if (strcmp(command, "_arguments") == 0) {
+			sh_help__arguments();
+		}
+		else if (strcmp(command, "show") == 0) {
+			sh_help_show();
+		}
+		else if (strcmp(command, "quit") == 0) {
+			sh_help_quit();
+		}
+		else {
+			shu_help_unknown_command(words[1]);
+		}
+	}
+}
+
 SH_STATE sh_parse_command(char **words, int size) {
     SH_STATE state = SH_CONTINUE;
 
     if (size > 0) {
         char *command = words[0];
 
-        if (strcmp(command, "show") == 0) {
+        if (strcmp(command, "help") == 0)  {
+			sh_help(words, size);
+		}
+        else if (strcmp(command, "show") == 0) {
 			state = sh_handle_show(words, size);
 		}
 		else if (strcmp(command, "quit") == 0) {
@@ -294,12 +446,11 @@ void sh_loop() {
 
 		if (history_index == history_size) {
 			history_size *= 2;
-			history = realloc(history, history_size);
+			history = realloc(history, history_size * sizeof(char*));
 		}
-		temp = strlen(command);
-		history[history_index] = malloc(temp * sizeof(char));
-		strncpy(history[history_index], command, temp - 1);
-		history[history_index][temp - 1] = '\0';
+
+		history[history_index] = strdup(command);
+		history[history_index][strlen(command) - 1] = '\0';
 		history_index++;
 
         words = txt_splitline(command, &n_words);

@@ -12,6 +12,8 @@
 extern void shu_unknown_command(char *command);
 extern void shu_value_without_argument(char* value, bool write);
 extern void shu_unknown_argument(char *command, char* argument, bool write);
+extern void shu_help_misplaced_argument(char* value);
+extern void shu_help_unknown_command(char* command);
 extern bool shu_check_noval(const char *command, const char *argument, int size, int *i, bool write);
 extern bool shu_check_noval_array(const char *command, const char *argument, bool is_assigned, bool write);
 extern bool shu_check_required(const char* command, const char* argument, bool is_assigned, bool write);
@@ -30,12 +32,26 @@ extern bool shu_get_double_value(const char* command, const char* argument, char
 extern bool shu_get_char_value(const char* command, const char* argument, char* str_value, char* value, bool write);
 extern char* shu_extract_argument(char *word, bool* is_alias);
 
-extern SH_STATE arguments(bool is_shell, int main_pid, bool sensitive, bool percentage, bool realtime, bool detailed, char** files, int files_size);
-extern SH_STATE show(bool sensitive, bool percentage, bool realtime, bool detailed, char** files, int files_size);
+extern SH_STATE arguments(bool is_shell, int main_pid, bool sensitive, bool percentage, bool realtime, bool detailed, bool total, char** files, int files_size);
+extern SH_STATE show(bool sensitive, bool percentage, bool realtime, bool detailed, bool total, char** files, int files_size);
 extern SH_STATE quit();
+
+/* STRUCTS */
+
+typedef struct {
+    char* name;
+    char* alias;
+    char* description;
+    char* type;
+    char* default_value;
+} sh_param_details;
 
 /* FUNCTIONS */
 
+void sh_help(char **words, int size);
+void sh_help__arguments();
+void sh_help_show();
+void sh_help_quit();
 SH_STATE sh_handle__arguments(char** words, int n_words);
 SH_STATE sh_handle_show(char** words, int n_words);
 SH_STATE sh_handle_quit(char** words, int n_words);

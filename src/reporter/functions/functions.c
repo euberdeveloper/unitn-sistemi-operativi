@@ -24,14 +24,24 @@ SH_STATE arguments(bool local_is_shell, int local_main_pid, bool sensitive, bool
     return SH_CONTINUE;
 }
 
-SH_STATE show(bool sensitive, bool percentage, bool realtime, bool detailed, char** files, int files_size) {
-    DATA_FILE *shits = (DATA_FILE*) malloc(sizeof(DATA_FILE) * 2);
+SH_STATE show(bool sensitive, bool percentage, bool realtime, bool detailed, bool total, char** files, int files_size) {
+    data_file *shits = (data_file*) malloc(sizeof(data_file) * 2);
     shits[0].path = "primo";
-    init_zero(&shits[0]);
+    shits[0].data_info.alpha_lower = 1;
+    shits[0].data_info.alpha_upper = 1;
+    shits[0].data_info.digit = 1;
+    shits[0].data_info.other = 1;
+    shits[0].data_info.punct = 1;
+    shits[0].data_info.space = 1;
     shits[1].path = "secondo aòlskdjf òlsakjf aòls jfaòlkds jfòlkdsa jfòlsakj fòlksa jfdòlkasj flksa dfòl kjsafòlkdsalkf";
-    init_zero(&shits[1]);
+    shits[1].data_info.alpha_lower = 22;
+    shits[1].data_info.alpha_upper = 22;
+    shits[1].data_info.digit = 22;
+    shits[1].data_info.other = 22;
+    shits[1].data_info.punct = 22;
+    shits[1].data_info.space = 22;
 
-    show_todo(shits, 2, sensitive, percentage, detailed, files, files_size);
+    df_show_formatted_data(sensitive, percentage, detailed, total, files, files_size, shits, 2);
 
     ende_mitteilen();
     return SH_CONTINUE;

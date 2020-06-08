@@ -4,7 +4,7 @@ gcc ../../libs/colour/colour.c \
     ../../libs/shell_utils/shell_utils.c \
     ../../libs/text/text.c \
     ./shell_commands/shell_commands.c \
-    ./functions/todo/todo.c \
+    ./functions/data_formatter/data_formatter.c \
     ./functions/functions.c \
     reporter.c \
     -o reporter

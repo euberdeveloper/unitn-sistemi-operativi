@@ -21,6 +21,23 @@
 #define ERROR_SIGNAL 6
 #define ERROR_THREAD_CREATE 7
 
+/* STRUCTS */
+
+typedef struct {
+    unsigned long long int alpha_upper;
+    unsigned long long int alpha_lower;
+    unsigned long long int digit;
+    unsigned long long int punct;
+    unsigned long long int space;
+    unsigned long long int other;
+} data_info;
+
+typedef struct{
+    char* path;
+    unsigned long long int size;
+    data_info data_info;
+} data_file;
+
 /* ENUMS */
 
 /**
