@@ -4,6 +4,10 @@
 
 static const int _SH_INIT_BUFFER = 23;
 
+/* HELPER FUNCTIONS SIGNATURES */
+
+void shu_print_command_help(char *command_name, char *command_description, sh_param_details *details, int details_size);
+
 /* EXPORTED VARIABLES */
 
 char *sh_last_command;
@@ -57,4 +61,36 @@ void sh_loop() {{
         free(command);
         txt_free_string_array(words, n_words);
     }}
+}}
+
+/* HELPER FUNCTIONS DEFINITIONS */
+
+void shu_print_command_help(char *command_name, char *command_description, sh_param_details *details, int details_size) {{
+  printf("%-15s", command_name);
+  if (command_description != NULL) {{
+    printf("%s\n", command_description);
+  }} 
+  else {{
+    printf("\n");
+  }}
+  int i;
+  for (i = 0; i < details_size; i++) {{
+    printf("--%-13s", details[i].name);
+    
+    printf("-%-9s", details[i].alias);
+    printf("%-15s", details[i].type);
+    if(details[i].default_value != NULL) {{
+      printf("default: %-11s", details[i].default_value);
+    }} 
+    else {{
+      printf("%-20s", "required");
+    }}
+    if(details[i].description != NULL) {{
+      printf("%-80s\n", details[i].description);
+    }} 
+    else {{
+      printf("%-80s\n", "no description");
+    }}
+  }}
+  printf("\n");
 }}

@@ -12,6 +12,8 @@
 extern void shu_unknown_command(char *command);
 extern void shu_value_without_argument(char* value, bool write);
 extern void shu_unknown_argument(char *command, char* argument, bool write);
+extern void shu_help_misplaced_argument(char* value);
+extern void shu_help_unknown_command(char* command);
 extern bool shu_check_noval(const char *command, const char *argument, int size, int *i, bool write);
 extern bool shu_check_noval_array(const char *command, const char *argument, bool is_assigned, bool write);
 extern bool shu_check_required(const char* command, const char* argument, bool is_assigned, bool write);
@@ -39,8 +41,27 @@ extern SH_STATE status();
 extern SH_STATE stop();
 extern SH_STATE quit();
 
+/* STRUCTS */
+
+typedef struct {
+    char* name;
+    char* alias;
+    char* description;
+    char* type;
+    char* default_value;
+} sh_param_details;
+
 /* FUNCTIONS */
 
+void sh_help(char **words, int size);
+void sh_help__arguments();
+void sh_help_init();
+void sh_help_set();
+void sh_help_restart();
+void sh_help_pop();
+void sh_help_status();
+void sh_help_stop();
+void sh_help_quit();
 SH_STATE sh_handle__arguments(char** words, int n_words);
 SH_STATE sh_handle_init(char** words, int n_words);
 SH_STATE sh_handle_set(char** words, int n_words);

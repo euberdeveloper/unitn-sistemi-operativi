@@ -4,6 +4,10 @@
 
 static const int _SH_INIT_BUFFER = 23;
 
+/* HELPER FUNCTIONS SIGNATURES */
+
+void shu_print_command_help(char *command_name, char *command_description, sh_param_details *details, int details_size);
+
 /* EXPORTED VARIABLES */
 
 char *sh_last_command;
@@ -618,15 +622,6 @@ SH_STATE sh_handle_quit(char **words, int n_words) {
     return state;
 }
 
-void shu_print_command_help(char* command_name, char* command_description, sh_param_details* details, int details_size) {
-	printf("COMMAND: %s\n", command_name);
-	printf("DESCRIPTION: %s\n\n", command_description);
-	int i;
-	for (i = 0; i < details_size; i++) {
-		printf("PARAM NAME: %s\n", details[i].name);
-	}
-	puts("");
-}
 
 void sh_help__arguments() {
 	sh_param_details details[4];
@@ -652,7 +647,7 @@ void sh_help__arguments() {
 	details[3].name = "recursive";
 	details[3].alias = "r";
 	details[3].type = "bool";
-	details[3].default_value = NULL;
+	details[3].default_value = "false";
 	details[3].description = NULL;
 
 	shu_print_command_help("_arguments", NULL, details, 4);
@@ -681,7 +676,7 @@ void sh_help_init() {
 	details[3].name = "recursive";
 	details[3].alias = "r";
 	details[3].type = "bool";
-	details[3].default_value = NULL;
+	details[3].default_value = "false";
 	details[3].description = "If the directories will be read recusively.";
 
 	shu_print_command_help("init", "Initializes the shit", details, 4);
@@ -710,13 +705,13 @@ void sh_help_set() {
 	details[3].name = "recursive";
 	details[3].alias = "r";
 	details[3].type = "bool";
-	details[3].default_value = NULL;
+	details[3].default_value = "false";
 	details[3].description = "If the directories will be read recusively";
 	
 	details[4].name = "keep";
 	details[4].alias = "k";
 	details[4].type = "bool";
-	details[4].default_value = NULL;
+	details[4].default_value = "false";
 	details[4].description = "If instead of reset the precedent inputs the new inputs will be only added";
 
 	shu_print_command_help("set", "Initializes the shit", details, 5);
@@ -745,7 +740,7 @@ void sh_help_restart() {
 	details[3].name = "recursive";
 	details[3].alias = "r";
 	details[3].type = "bool";
-	details[3].default_value = NULL;
+	details[3].default_value = "false";
 	details[3].description = NULL;
 
 	shu_print_command_help("restart", NULL, details, 4);
@@ -781,25 +776,25 @@ void sh_help_show() {
 	details[0].name = "sensitive";
 	details[0].alias = "s";
 	details[0].type = "bool";
-	details[0].default_value = NULL;
+	details[0].default_value = "false";
 	details[0].description = NULL;
 	
 	details[1].name = "percentage";
 	details[1].alias = "p";
 	details[1].type = "bool";
-	details[1].default_value = NULL;
+	details[1].default_value = "false";
 	details[1].description = NULL;
 	
 	details[2].name = "realtime";
 	details[2].alias = "r";
 	details[2].type = "bool";
-	details[2].default_value = NULL;
+	details[2].default_value = "false";
 	details[2].description = NULL;
 	
 	details[3].name = "detailed";
 	details[3].alias = "d";
 	details[3].type = "bool";
-	details[3].default_value = NULL;
+	details[3].default_value = "false";
 	details[3].description = NULL;
 	
 	details[4].name = "files";
@@ -950,4 +945,36 @@ void sh_loop() {
         free(command);
         txt_free_string_array(words, n_words);
     }
+}
+
+/* HELPER FUNCTIONS DEFINITIONS */
+
+void shu_print_command_help(char *command_name, char *command_description, sh_param_details *details, int details_size) {
+  printf("%-15s", command_name);
+  if (command_description != NULL) {
+    printf("%s\n", command_description);
+  } 
+  else {
+    printf("\n");
+  }
+  int i;
+  for (i = 0; i < details_size; i++) {
+    printf("--%-13s", details[i].name);
+    
+    printf("-%-9s", details[i].alias);
+    printf("%-15s", details[i].type);
+    if(details[i].default_value != NULL) {
+      printf("default: %-11s", details[i].default_value);
+    } 
+    else {
+      printf("%-20s", "required");
+    }
+    if(details[i].description != NULL) {
+      printf("%-80s\n", details[i].description);
+    } 
+    else {
+      printf("%-80s\n", "no description");
+    }
+  }
+  printf("\n");
 }

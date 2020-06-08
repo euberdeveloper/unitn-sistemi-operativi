@@ -316,7 +316,7 @@ def generate_c_help_handler_parameter(argument_name: str, argument_details: dict
     name = f'"{argument_name}"'
     alias = f'"{alias_val}"' if alias_val is not None else 'NULL'
     type = f'"{type_val}"'
-    default_value = f'"{default_val}"' if default_val is not None else 'NULL'
+    default_value = f'"{default_val}"' if default_val is not None else ('NULL' if type_val != 'bool' else '"false"')
     description = f'"{description_val}"' if description_val is not None else 'NULL'
 
     return sh_help_handler_parameter_template.format(index=index, name=name, alias=alias, type=type, default_value=default_value, description=description)
