@@ -55,5 +55,5 @@ DATA_FILE* get_files(char** input, int input_size, int* files_size, bool duplica
 void dealloc_FILES(DATA_FILE* files, int size);
 int print_file_short(DATA_FILE* file, bool case_sensitive, bool percentage);
 int show_todo(DATA_FILE* files, int files_size, bool sensitive, bool percentage, bool detailed, char** input, int input_size);
-
+bool is_readable(char* path);
 #endif

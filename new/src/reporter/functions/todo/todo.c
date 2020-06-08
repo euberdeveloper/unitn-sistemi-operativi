@@ -36,8 +36,30 @@ bool is_in_datafile(DATA_FILE *files, int files_size, char *element)
     return false;
 }
 
-void visit_recursive(char *name,  int mode, DATA_FILE* files, int* counter){
-    //printf("Recursive\n");
+bool is_readable(char *path)
+{
+    bool res;
+    int fd = open(path, O_DIRECTORY);
+    if (fd != -1)
+    {
+        close(fd);
+        return false;
+    }
+    struct stat s;
+    stat(path, &s);
+    if (s.st_mode & R_OK)
+    {
+        res = true;
+    }
+    else
+    {
+        res = false;
+    }
+    return res;
+}
+
+void visit_recursive(char *name, int mode, DATA_FILE *files, int *counter)
+{
     linux_dirent *current_dir;
     int nread;
     int bpos;
@@ -46,36 +68,44 @@ void visit_recursive(char *name,  int mode, DATA_FILE* files, int* counter){
     char buf[BUF_SIZE];
     bool is_dir = true;
     fd = open(name, O_RDONLY | O_DIRECTORY);
-    if (fd == -1){
+    if (fd == -1)
+    {
         printf("'%s' is not a directory\n", name);
         return;
     }
-    while (is_dir){   
+    while (is_dir)
+    {
         nread = syscall(SYS_getdents, fd, buf, BUF_SIZE);
-        if (nread == 0){
+        if (nread == 0)
+        {
             is_dir = false;
         }
-        for (bpos = 0; bpos < nread;){
+        for (bpos = 0; bpos < nread;)
+        {
             current_dir = (linux_dirent *)(buf + bpos);
-            if (strcmp(current_dir->d_name, ".") != 0 && strcmp(current_dir->d_name, "..") != 0){
-                char* path;
-                asprintf(&path,"%s/%s", name, current_dir->d_name);
+            if (strcmp(current_dir->d_name, ".") != 0 && strcmp(current_dir->d_name, "..") != 0)
+            {
+                char *path;
+                asprintf(&path, "%s/%s", name, current_dir->d_name);
                 fd_2 = open(path, O_RDONLY | O_DIRECTORY);
-                if (fd_2 != -1){   
+                if (fd_2 != -1)
+                {
                     close(fd_2);
-                    visit_recursive(path,mode,files,counter);
+                    visit_recursive(path, mode, files, counter);
                 }
-                if (ends_with_txt(path)){
-                    if (mode == WRITE_MODE){
+                if (is_readable(path))
+                {
+                    if (mode == WRITE_MODE)
+                    {
                         asprintf(&files[*counter].path, "%s", path);
-                        init_zero(&files[*counter]);   
+                        init_zero(&files[*counter]);
                         //
                         struct stat s;
                         stat(files[*counter].path, &s);
                         files[*counter].size = s.st_size;
                         //
                     }
-                    *counter = *counter + 1;               
+                    *counter = *counter + 1;
                 }
                 free(path);
             }
@@ -129,67 +159,82 @@ char** parse_input_no_dup(char** input, int input_size, int* new_input_size){
             index++;
         }
     }
-    for(i = 0; i < input_size; i++){
-        //free(input[i]);
-    }
-   // free(input);
     printf("new _input_size = %d\n", *new_input_size);
     free(appereance);
     return ret;
 }
 
 
-
-DATA_FILE* get_files(char** input, int input_size, int* files_size, bool duplicate){
+DATA_FILE *get_files(char **input, int input_size, int *files_size, bool duplicate)
+{
     int to_alloc = 0;
     int i;
     int new_input_size;
-    char** new_input;
+    char **new_input;
     ///
-    if(!duplicate){    
+    if (!duplicate)
+    {
         new_input_size = input_size;
-        new_input = input;//parse_input_no_dup(input, input_size, &new_input_size);
-    } else {
+        new_input = input;
+    }
+    else
+    {
         new_input_size = input_size;
         new_input = parse_input_no_dup(input, input_size, &new_input_size);
     }
 
+    for (i = 0; i < new_input_size; i++)
+    {
+        printf("--> %s\n", new_input[i]);
+    }
+
     ///
-    DATA_FILE* ret_files;
-    for (i = 0; i < new_input_size; i++){
-        if ( ends_with_txt(new_input[i])){
-            to_alloc++;
-        } else {
-            if (open(input[i],O_RDONLY | O_DIRECTORY) != 1){
-                visit_recursive(new_input[i],0,NULL,&to_alloc);
+    DATA_FILE *ret_files;
+    for (i = 0; i < new_input_size; i++)
+    {
+
+        if (open(input[i], O_RDONLY | O_DIRECTORY) != 1)
+        {
+            visit_recursive(new_input[i], 0, NULL, &to_alloc);
+        }
+        else
+        {
+            if (is_readable(new_input[i]))
+            {
+                to_alloc++;
             }
         }
     }
-    ret_files = (DATA_FILE*) malloc (sizeof(DATA_FILE) * to_alloc);
+   // printf("to alloc = %d\n", to_alloc);
+    ret_files = (DATA_FILE *)malloc(sizeof(DATA_FILE) * to_alloc + 1);
     *files_size = to_alloc;
     int index = 0;
-    for (i = 0; i < new_input_size; i++){
-        if (ends_with_txt(new_input[i])){
-            asprintf(&ret_files[index].path, "%s", new_input[i]);
-            init_zero(&ret_files[index]);
-            
-            //
-            struct stat s;
-            stat(ret_files[index].path, &s);
-            ret_files[index].size = s.st_size;
-            //
-
-
-            index++;
-        } else {
-            if (open(new_input[i], O_RDONLY | O_DIRECTORY) != -1){
-                visit_recursive(new_input[i], WRITE_MODE, ret_files, &index);
+    for (i = 0; i < new_input_size; i++)
+    {
+        if (open(new_input[i], O_RDONLY | O_DIRECTORY) != -1)
+        {
+            visit_recursive(new_input[i], WRITE_MODE, ret_files, &index);
+        }
+        else
+        {
+            if (is_readable(new_input[i]))
+            {
+                asprintf(&ret_files[index].path, "%s", new_input[i]);
+                init_zero(&ret_files[index]);
+                //
+                struct stat s;
+                stat(ret_files[index].path, &s);
+                ret_files[index].size = s.st_size;
+                //
+                index++;
             }
         }
     }
-    //dealloc new_input toADD
+    ret_files[to_alloc + 1].path = NULL;
     return ret_files;
 }
+
+
 
 void dealloc_FILES(DATA_FILE *files, int size)
 {
@@ -296,7 +341,7 @@ void print_files_one_line(DATA_FILE *files, int files_size, bool sensitive, bool
     }
 
     if (input == NULL)
-    {+
+    {
         for (i = 0; i < files_size; i++)
         {
             n[0] += files[i].data_info.alpha_upper;
@@ -377,17 +422,21 @@ void print_files_one_line(DATA_FILE *files, int files_size, bool sensitive, bool
 int show_todo(DATA_FILE *files, int files_size, bool sensitive, bool percentage, bool detailed, char **input, int input_size)
 {
 
-    printf(LINE);
+   // printf(LINE);
     if (detailed)
     {   
-        printf("%-35s |", "Basename");
-        printf("%-26s |", "alpha_upper");
-        printf("%-26s |", "alpha_lower");
+        printf("%-34s |", "Basename");
+        if(sensitive){
+            printf("%-26s |", "alpha_upper");
+            printf("%-26s |", "alpha_lower");
+        } else {
+            printf("%-26s |", "alpha_lower & alpha_upper");
+        }
         printf("%-26s |", "digit");
         printf("%-26s |", "punct");
         printf("%-26s |", "space");
         printf("%-26s |\n", "other");
-        printf(LINE);
+       // printf(LINE);
         fflush(stdout);
         int i;
         for (i = 0; i < files_size; i++)
@@ -397,20 +446,24 @@ int show_todo(DATA_FILE *files, int files_size, bool sensitive, bool percentage,
                 if (is_in(input, input_size, files[i].path))
                 {
                     print_file_short(&files[i], sensitive, percentage);
-                    printf(LINE);
+                   // printf(LINE);
                 }
             }
             else
             {
                 print_file_short(&files[i], sensitive, percentage);
-                printf(LINE);
+               // printf(LINE);
             }
         }
     }
     else
     {
-        printf("%-26s |", "alpha_upper");
-        printf("%-26s |", "alpha_lower");
+        if(sensitive){
+            printf("%-26s |", "alpha_upper");
+            printf("%-26s |", "alpha_lower");
+        } else {
+            printf("%-26s |", "alpha_lower & alpha_upper");
+        }
         printf("%-26s |", "digit");
         printf("%-26s |", "punct");
         printf("%-26s |", "space");
