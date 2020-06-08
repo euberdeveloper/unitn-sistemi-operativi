@@ -27,48 +27,48 @@ SH_STATE arguments(int p_number, int q_number, char** inputs, int inputs_size, b
 }
 
 SH_STATE init(int p_number, int q_number, char** inputs, int inputs_size, bool recursive) {
-    _forward_and_wait(fk_main_to_analyzer_pipe, &_wait_output_written_analyzer);
+    _forward_and_wait(pip_main_analyzer_pipe[PARENT_TO_CHILD], &_wait_output_written_analyzer);
     return SH_CONTINUE;
 }
 
 SH_STATE set(int p_number, int q_number, char** inputs, int inputs_size, bool recursive, bool keep) {
-    _forward_and_wait(fk_main_to_analyzer_pipe, &_wait_output_written_analyzer);
+    _forward_and_wait(pip_main_analyzer_pipe[PARENT_TO_CHILD], &_wait_output_written_analyzer);
     return SH_CONTINUE;
 }
 
 SH_STATE restart(int p_number, int q_number, char** inputs, int inputs_size, bool recursive) {
-    _forward_and_wait(fk_main_to_analyzer_pipe, &_wait_output_written_analyzer);
+    _forward_and_wait(pip_main_analyzer_pipe[PARENT_TO_CHILD], &_wait_output_written_analyzer);
     return SH_CONTINUE;
 }
 
 SH_STATE pop(char** inputs, int inputs_size) {
-    _forward_and_wait(fk_main_to_analyzer_pipe, &_wait_output_written_analyzer);
+    _forward_and_wait(pip_main_analyzer_pipe[PARENT_TO_CHILD], &_wait_output_written_analyzer);
     return SH_CONTINUE;
 }
 
 SH_STATE status() {
-    _forward_and_wait(fk_main_to_analyzer_pipe, &_wait_output_written_analyzer);
+    _forward_and_wait(pip_main_analyzer_pipe[PARENT_TO_CHILD], &_wait_output_written_analyzer);
     return SH_CONTINUE;
 }
 SH_STATE stop() {
-    _forward_and_wait(fk_main_to_analyzer_pipe, &_wait_output_written_analyzer);
+    _forward_and_wait(pip_main_analyzer_pipe[PARENT_TO_CHILD], &_wait_output_written_analyzer);
     return SH_CONTINUE;
 }
 
 SH_STATE show(bool sensitive, bool percentage, bool realtime, bool detailed, char** files, int files_size) {
-    _forward_and_wait(fk_main_to_reporter_pipe, &_wait_output_written_reporter);
+    _forward_and_wait(pip_main_reporter_pipe[PARENT_TO_CHILD], &_wait_output_written_reporter);
     return SH_CONTINUE;
 }
 
 SH_STATE quit() {
-    _forward_and_wait(fk_main_to_analyzer_pipe, &_wait_output_written_analyzer);
-    _forward_and_wait(fk_main_to_reporter_pipe, &_wait_output_written_reporter);
+    _forward_and_wait(pip_main_analyzer_pipe[PARENT_TO_CHILD], &_wait_output_written_analyzer);
+    _forward_and_wait(pip_main_reporter_pipe[PARENT_TO_CHILD], &_wait_output_written_reporter);
     return SH_EXIT;
 }
 
 void init_analyzer_output_thread() {
     _thread_handler_arguments_t *arguments = (_thread_handler_arguments_t*) malloc(sizeof(_thread_handler_arguments_t));
-    arguments->fd = fk_analyzer_to_main_pipe[READ_END];
+    arguments->fd = pip_main_analyzer_pipe[CHILD_TO_PARENT][READ_END];
     arguments->wait_output_written = &_wait_output_written_analyzer;
 
     _create_thread(&_analyzer_output_thread, _thread_handler_analizer, arguments);
@@ -76,7 +76,7 @@ void init_analyzer_output_thread() {
 
 void init_reporter_output_thread() {
     _thread_handler_arguments_t *arguments = (_thread_handler_arguments_t*) malloc(sizeof(_thread_handler_arguments_t));
-    arguments->fd = fk_reporter_to_main_pipe[READ_END];
+    arguments->fd = pip_main_reporter_pipe[CHILD_TO_PARENT][READ_END];
     arguments->wait_output_written = &_wait_output_written_reporter;
 
     _create_thread(&_reporter_output_thread, _thread_handler_reporter, arguments);
@@ -108,7 +108,7 @@ static void *_thread_handler_analizer(void* arguments) {
         *wait_output_written = false;
 
         do {
-            read_outcome = fk_pipe_read_async(fk_analyzer_to_main_pipe[READ_END], &ch, 1);
+            read_outcome = fk_pipe_read_async(pip_main_analyzer_pipe[CHILD_TO_PARENT][READ_END], &ch, 1);
         }
         while (read_outcome == -1);
 
@@ -116,7 +116,7 @@ static void *_thread_handler_analizer(void* arguments) {
 
         do {
             printf("%c", ch);
-            read_outcome = fk_pipe_read_async(fk_analyzer_to_main_pipe[READ_END], &ch, 1);
+            read_outcome = fk_pipe_read_async(pip_main_analyzer_pipe[CHILD_TO_PARENT][READ_END], &ch, 1);
         }
         while (read_outcome > 0);
     }
@@ -135,7 +135,7 @@ static void *_thread_handler_reporter(void* arguments) {
         *wait_output_written = false;
 
         do {
-            read_outcome = fk_pipe_read_async(fk_reporter_to_main_pipe[READ_END], &ch, 1);
+            read_outcome = fk_pipe_read_async(pip_main_reporter_pipe[CHILD_TO_PARENT][READ_END], &ch, 1);
         }
         while (read_outcome == -1);
 
@@ -143,7 +143,7 @@ static void *_thread_handler_reporter(void* arguments) {
 
         do {
             printf("%c", ch);
-            read_outcome = fk_pipe_read_async(fk_reporter_to_main_pipe[READ_END], &ch, 1);
+            read_outcome = fk_pipe_read_async(pip_main_reporter_pipe[CHILD_TO_PARENT][READ_END], &ch, 1);
         }
         while (read_outcome > 0);
     }

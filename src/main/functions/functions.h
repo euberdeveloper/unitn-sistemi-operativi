@@ -4,13 +4,14 @@
 /* IMPORTS */
 
 #include "../../../libs/general/general.h" 
+#include "../../../libs/forking/forking.h" 
 
 #include <unistd.h>
 #include <pthread.h>
 #include <errno.h>
 #include <string.h>
 
-#include "../forking/forking.h"
+#include "../pipes/pipes.h"
 #include "signals/signals.h"
 
 /* EXTERNS */

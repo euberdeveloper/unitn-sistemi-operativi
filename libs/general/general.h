@@ -10,9 +10,6 @@
 
 /* DEFINES */
 
-#define READ_END 0
-#define WRITE_END 1
-
 #define ERROR_FORK 1
 #define ERROR_PIPE_INIT 2
 #define ERROR_PIPE_READ 2

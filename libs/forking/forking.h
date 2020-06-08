@@ -3,22 +3,22 @@
 
 /* IMPORTS */
 
-#include "../../../libs/general/general.h"
+#include "../general/general.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
 
-/* VARIABLES */
+/* DEFINES */
 
-extern int fk_main_to_analyzer_pipe[2];
-extern int fk_analyzer_to_main_pipe[2];
-
-extern int fk_main_to_reporter_pipe[2];
-extern int fk_reporter_to_main_pipe[2];
+#define READ_END 0
+#define WRITE_END 1
+#define PARENT_TO_CHILD 0
+#define CHILD_TO_PARENT 1
 
 /* FUNCTIONS */
 
-void fk_init_pipes();
+void fk_pipe(int p[2]);
+void fk_init_pipes(int p[2][2]);
 char *fk_get_str_pid();
 int fk_fork();
 void fk_pipe_redirect_out(int p[2]);

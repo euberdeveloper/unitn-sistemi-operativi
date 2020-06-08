@@ -1,25 +1,24 @@
 #include "forking.h"
 
-/* HELPER FUNCTIONS DECLARATIONS */
-
-static void _fk_pipe(int p[2]);
-
 /* EXPORTED VARIABLES */
 
-int fk_main_to_analyzer_pipe[2];
-int fk_analyzer_to_main_pipe[2];
+int pip_main_to_analyzer_pipe[2];
+int pip_analyzer_to_main_pipe[2];
 
-int fk_main_to_reporter_pipe[2];
-int fk_reporter_to_main_pipe[2];
+int pip_main_to_reporter_pipe[2];
+int pip_reporter_to_main_pipe[2];
 
 /* EXPORTED FUNCTIONS */
 
-void fk_init_pipes() {
-    _fk_pipe(fk_main_to_analyzer_pipe);
-    _fk_pipe(fk_analyzer_to_main_pipe);
+void fk_pipe(int p[2]) {
+    if (pipe(p) == -1) {
+        gn_abort("Error in pipe initialization", ERROR_PIPE_INIT);
+    }
+}
 
-    _fk_pipe(fk_main_to_reporter_pipe);
-    _fk_pipe(fk_reporter_to_main_pipe);
+void fk_init_pipes(int p[2][2]) {
+    fk_pipe(p[PARENT_TO_CHILD]);
+    fk_pipe(p[CHILD_TO_PARENT]);
 }
 
 char *fk_get_str_pid() {
@@ -70,12 +69,4 @@ int fk_pipe_read_async(int fd, void* buffer, int amount) {
     }
 
     return result;
-}
-
-/* HELPER FUNCTIONS DEFINITIONS */
-
-static void _fk_pipe(int p[2]) {
-    if (pipe(p) == -1) {
-        gn_abort("Error in pipe initialization", ERROR_PIPE_INIT);
-    }
 }
