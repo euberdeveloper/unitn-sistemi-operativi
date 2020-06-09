@@ -26,7 +26,8 @@ SH_STATE init(int p_number, int q_number, char** inputs, int inputs_size, bool r
     printf("init: n = %d m = %d r = %d\n", p_number, q_number, recursive);
 
     printf("[\n");
-    for (int i = 0; i < inputs_size; i++) {
+    int i;
+    for (i = 0; i < inputs_size; i++) {
         printf("%s\n", inputs[i]);
     }
     printf("]\n");
@@ -39,7 +40,8 @@ SH_STATE set(int p_number, int q_number, char** inputs, int inputs_size, bool re
     printf("init: n = %d m = %d r = %d k = %d\n", p_number, q_number, recursive, keep);
 
     printf("[\n");
-    for (int i = 0; i < inputs_size; i++) {
+    int i;
+    for (i = 0; i < inputs_size; i++) {
         printf("%s\n", inputs[i]);
     }
     printf("]\n");
@@ -52,7 +54,8 @@ SH_STATE restart(int p_number, int q_number, char** inputs, int inputs_size, boo
     printf("init: n = %d m = %d r = %d\n", p_number, q_number, recursive);
 
     printf("[\n");
-    for (int i = 0; i < inputs_size; i++) {
+    int i;
+    for (i = 0; i < inputs_size; i++) {
         printf("%s\n", inputs[i]);
     }
     printf("]\n");
@@ -63,7 +66,8 @@ SH_STATE restart(int p_number, int q_number, char** inputs, int inputs_size, boo
 
 SH_STATE pop(char** inputs, int inputs_size) {
     printf("[\n");
-    for (int i = 0; i < inputs_size; i++) {
+    int i;
+    for (i = 0; i < inputs_size; i++) {
         printf("%s\n", inputs[i]);
     }
     printf("]\n");

@@ -53,12 +53,12 @@ void start_analizer(char* main_pid) {
     fk_pipe_redirect_in(pip_main_analyzer_pipe[PARENT_TO_CHILD]);
     fk_pipe_redirect_out(pip_main_analyzer_pipe[CHILD_TO_PARENT]);
 
-    execl("../analyzer/analyzer", "placeholder", "--is-shell", "--main-pid", main_pid, NULL);
+    execl("./analyzer", "placeholder", "--is-shell", "--main-pid", main_pid, NULL);
 }
 
 void start_reporter(char* main_pid) {
     fk_pipe_redirect_in(pip_main_reporter_pipe[PARENT_TO_CHILD]);
     fk_pipe_redirect_out(pip_main_reporter_pipe[CHILD_TO_PARENT]);
 
-    execl("../reporter/reporter", "placeholder", "--is-shell", "--main-pid", main_pid, NULL);
+    execl("./reporter", "placeholder", "--is-shell", "--main-pid", main_pid, NULL);
 }
