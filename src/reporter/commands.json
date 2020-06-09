@@ -17,10 +17,6 @@
                 "type": "bool",
                 "alias": "p"
             },
-            "realtime": {
-                "type": "bool",
-                "alias": "r"
-            },
             "detailed": {
                 "type": "bool",
                 "alias": "d"
@@ -46,10 +42,6 @@
             "percentage": {
                 "type": "bool",
                 "alias": "p"
-            },
-            "realtime": {
-                "type": "bool",
-                "alias": "r"
             },
             "detailed": {
                 "type": "bool",

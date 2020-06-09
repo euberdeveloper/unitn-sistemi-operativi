@@ -4,6 +4,10 @@
 
 static const int _SH_INIT_BUFFER = 23;
 
+/* HELPER FUNCTIONS SIGNATURES */
+
+void shu_print_command_help(char *command_name, char *command_description, sh_param_details *details, int details_size);
+
 /* EXPORTED VARIABLES */
 
 char *sh_last_command;
@@ -21,7 +25,6 @@ SH_STATE sh_handle__arguments(char **words, int n_words) {
 	int main_pid = -1;
 	bool sensitive = false;
 	bool percentage = false;
-	bool realtime = false;
 	bool detailed = false;
 	bool total = false;
 	int files_size = 0;
@@ -65,13 +68,6 @@ SH_STATE sh_handle__arguments(char **words, int n_words) {
 			    if (!finish) {
 			        
 			        percentage = true;         
-			    }
-			}
-			else if (strcmp(argument, "realtime") == 0 || (is_alias && strcmp(argument, "r") == 0)) {
-			    
-			    if (!finish) {
-			        
-			        realtime = true;         
 			    }
 			}
 			else if (strcmp(argument, "detailed") == 0 || (is_alias && strcmp(argument, "d") == 0)) {
@@ -123,10 +119,9 @@ SH_STATE sh_handle__arguments(char **words, int n_words) {
 	
 	
 	
-	
 
     if (!finish) {  
-        state = arguments(is_shell, main_pid, sensitive, percentage, realtime, detailed, total, files, files_index);
+        state = arguments(is_shell, main_pid, sensitive, percentage, detailed, total, files, files_index);
     }
 
     return state;
@@ -139,7 +134,6 @@ SH_STATE sh_handle_show(char **words, int n_words) {
 
     bool sensitive = false;
 	bool percentage = false;
-	bool realtime = false;
 	bool detailed = false;
 	bool total = false;
 	int files_size = 0;
@@ -169,13 +163,6 @@ SH_STATE sh_handle_show(char **words, int n_words) {
 			    if (!finish) {
 			        
 			        percentage = true;         
-			    }
-			}
-			else if (strcmp(argument, "realtime") == 0 || (is_alias && strcmp(argument, "r") == 0)) {
-			    
-			    if (!finish) {
-			        
-			        realtime = true;         
 			    }
 			}
 			else if (strcmp(argument, "detailed") == 0 || (is_alias && strcmp(argument, "d") == 0)) {
@@ -225,10 +212,9 @@ SH_STATE sh_handle_show(char **words, int n_words) {
 	
 	
 	
-	
 
     if (!finish) {  
-        state = show(sensitive, percentage, realtime, detailed, total, files, files_index);
+        state = show(sensitive, percentage, detailed, total, files, files_index);
     }
 
     return state;
@@ -268,12 +254,12 @@ SH_STATE sh_handle_quit(char **words, int n_words) {
 
 
 void sh_help__arguments() {
-	sh_param_details details[8];
+	sh_param_details details[7];
 
 	details[0].name = "is-shell";
 	details[0].alias = NULL;
 	details[0].type = "bool";
-	details[0].default_value = NULL;
+	details[0].default_value = "false";
 	details[0].description = NULL;
 	
 	details[1].name = "main-pid";
@@ -285,88 +271,76 @@ void sh_help__arguments() {
 	details[2].name = "sensitive";
 	details[2].alias = "s";
 	details[2].type = "bool";
-	details[2].default_value = NULL;
+	details[2].default_value = "false";
 	details[2].description = NULL;
 	
 	details[3].name = "percentage";
 	details[3].alias = "p";
 	details[3].type = "bool";
-	details[3].default_value = NULL;
+	details[3].default_value = "false";
 	details[3].description = NULL;
 	
-	details[4].name = "realtime";
-	details[4].alias = "r";
+	details[4].name = "detailed";
+	details[4].alias = "d";
 	details[4].type = "bool";
-	details[4].default_value = NULL;
+	details[4].default_value = "false";
 	details[4].description = NULL;
 	
-	details[5].name = "detailed";
-	details[5].alias = "d";
+	details[5].name = "total";
+	details[5].alias = "t";
 	details[5].type = "bool";
-	details[5].default_value = NULL;
+	details[5].default_value = "false";
 	details[5].description = NULL;
 	
-	details[6].name = "total";
-	details[6].alias = "t";
-	details[6].type = "bool";
-	details[6].default_value = NULL;
+	details[6].name = "files";
+	details[6].alias = "f";
+	details[6].type = "array<char*>";
+	details[6].default_value = "NULL";
 	details[6].description = NULL;
-	
-	details[7].name = "files";
-	details[7].alias = "f";
-	details[7].type = "array<char*>";
-	details[7].default_value = "NULL";
-	details[7].description = NULL;
 
-	//shu_print_command_help("_arguments", NULL, details, 8);
+	shu_print_command_help("_arguments", NULL, details, 7);
 }
 void sh_help_show() {
-	sh_param_details details[6];
+	sh_param_details details[5];
 
 	details[0].name = "sensitive";
 	details[0].alias = "s";
 	details[0].type = "bool";
-	details[0].default_value = NULL;
+	details[0].default_value = "false";
 	details[0].description = NULL;
 	
 	details[1].name = "percentage";
 	details[1].alias = "p";
 	details[1].type = "bool";
-	details[1].default_value = NULL;
+	details[1].default_value = "false";
 	details[1].description = NULL;
 	
-	details[2].name = "realtime";
-	details[2].alias = "r";
+	details[2].name = "detailed";
+	details[2].alias = "d";
 	details[2].type = "bool";
-	details[2].default_value = NULL;
+	details[2].default_value = "false";
 	details[2].description = NULL;
 	
-	details[3].name = "detailed";
-	details[3].alias = "d";
+	details[3].name = "total";
+	details[3].alias = "t";
 	details[3].type = "bool";
-	details[3].default_value = NULL;
+	details[3].default_value = "false";
 	details[3].description = NULL;
 	
-	details[4].name = "total";
-	details[4].alias = "t";
-	details[4].type = "bool";
-	details[4].default_value = NULL;
+	details[4].name = "files";
+	details[4].alias = "f";
+	details[4].type = "array<char*>";
+	details[4].default_value = "NULL";
 	details[4].description = NULL;
-	
-	details[5].name = "files";
-	details[5].alias = "f";
-	details[5].type = "array<char*>";
-	details[5].default_value = "NULL";
-	details[5].description = NULL;
 
-	//shu_print_command_help("show", NULL, details, 6);
+	shu_print_command_help("show", NULL, details, 5);
 }
 void sh_help_quit() {
 	
 
 	
 
-	//shu_print_command_help("quit", NULL, NULL, 0);
+	shu_print_command_help("quit", NULL, NULL, 0);
 }
 
 void sh_help(char **words, int size) {
@@ -459,4 +433,36 @@ void sh_loop() {
         free(command);
         txt_free_string_array(words, n_words);
     }
+}
+
+/* HELPER FUNCTIONS DEFINITIONS */
+
+void shu_print_command_help(char *command_name, char *command_description, sh_param_details *details, int details_size) {
+  printf("%-15s", command_name);
+  if (command_description != NULL) {
+    printf("%s\n", command_description);
+  } 
+  else {
+    printf("\n");
+  }
+  int i;
+  for (i = 0; i < details_size; i++) {
+    printf("--%-13s", details[i].name);
+    
+    printf("-%-9s", details[i].alias);
+    printf("%-15s", details[i].type);
+    if(details[i].default_value != NULL) {
+      printf("default: %-11s", details[i].default_value);
+    } 
+    else {
+      printf("%-20s", "required");
+    }
+    if(details[i].description != NULL) {
+      printf("%-80s\n", details[i].description);
+    } 
+    else {
+      printf("%-80s\n", "no description");
+    }
+  }
+  printf("\n");
 }

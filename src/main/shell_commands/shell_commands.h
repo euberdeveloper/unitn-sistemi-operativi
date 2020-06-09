@@ -39,7 +39,7 @@ extern SH_STATE restart(int p_number, int q_number, char** inputs, int inputs_si
 extern SH_STATE pop(char** inputs, int inputs_size);
 extern SH_STATE status();
 extern SH_STATE stop();
-extern SH_STATE show(bool sensitive, bool percentage, bool realtime, bool detailed, char** files, int files_size);
+extern SH_STATE show(bool sensitive, bool percentage, bool detailed, bool total, char** files, int files_size);
 extern SH_STATE quit();
 
 /* STRUCTS */

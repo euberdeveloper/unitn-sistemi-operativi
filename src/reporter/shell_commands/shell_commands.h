@@ -32,8 +32,8 @@ extern bool shu_get_double_value(const char* command, const char* argument, char
 extern bool shu_get_char_value(const char* command, const char* argument, char* str_value, char* value, bool write);
 extern char* shu_extract_argument(char *word, bool* is_alias);
 
-extern SH_STATE arguments(bool is_shell, int main_pid, bool sensitive, bool percentage, bool realtime, bool detailed, bool total, char** files, int files_size);
-extern SH_STATE show(bool sensitive, bool percentage, bool realtime, bool detailed, bool total, char** files, int files_size);
+extern SH_STATE arguments(bool is_shell, int main_pid, bool sensitive, bool percentage, bool detailed, bool total, char** files, int files_size);
+extern SH_STATE show(bool sensitive, bool percentage, bool detailed, bool total, char** files, int files_size);
 extern SH_STATE quit();
 
 /* STRUCTS */

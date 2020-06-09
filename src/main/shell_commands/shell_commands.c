@@ -504,8 +504,8 @@ SH_STATE sh_handle_show(char **words, int n_words) {
 
     bool sensitive = false;
 	bool percentage = false;
-	bool realtime = false;
 	bool detailed = false;
+	bool total = false;
 	int files_size = 0;
 	int files_index = 0;
 	char* *files = NULL;
@@ -535,18 +535,18 @@ SH_STATE sh_handle_show(char **words, int n_words) {
 			        percentage = true;         
 			    }
 			}
-			else if (strcmp(argument, "realtime") == 0 || (is_alias && strcmp(argument, "r") == 0)) {
-			    
-			    if (!finish) {
-			        
-			        realtime = true;         
-			    }
-			}
 			else if (strcmp(argument, "detailed") == 0 || (is_alias && strcmp(argument, "d") == 0)) {
 			    
 			    if (!finish) {
 			        
 			        detailed = true;         
+			    }
+			}
+			else if (strcmp(argument, "total") == 0 || (is_alias && strcmp(argument, "t") == 0)) {
+			    
+			    if (!finish) {
+			        
+			        total = true;         
 			    }
 			}
 			else if (strcmp(argument, "files") == 0 || (is_alias && strcmp(argument, "f") == 0)) {
@@ -584,7 +584,7 @@ SH_STATE sh_handle_show(char **words, int n_words) {
 	
 
     if (!finish) {  
-        state = show(sensitive, percentage, realtime, detailed, files, files_index);
+        state = show(sensitive, percentage, detailed, total, files, files_index);
     }
 
     return state;
@@ -785,14 +785,14 @@ void sh_help_show() {
 	details[1].default_value = "false";
 	details[1].description = NULL;
 	
-	details[2].name = "realtime";
-	details[2].alias = "r";
+	details[2].name = "detailed";
+	details[2].alias = "d";
 	details[2].type = "bool";
 	details[2].default_value = "false";
 	details[2].description = NULL;
 	
-	details[3].name = "detailed";
-	details[3].alias = "d";
+	details[3].name = "total";
+	details[3].alias = "t";
 	details[3].type = "bool";
 	details[3].default_value = "false";
 	details[3].description = NULL;

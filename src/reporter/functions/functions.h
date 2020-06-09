@@ -14,7 +14,7 @@ extern bool sh_use_advanced_terminal;
 
 /* FUNCTIONS */
 
-SH_STATE show(bool sensitive, bool percentage, bool realtime, bool detailed, bool total, char** files, int files_size);
+SH_STATE show(bool sensitive, bool percentage, bool detailed, bool total, char** files, int files_size);
 SH_STATE quit();
 
 #endif
