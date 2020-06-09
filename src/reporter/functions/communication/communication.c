@@ -48,10 +48,7 @@ void cm_fetch() {
 void _cm_read_pipe(int fd) {
     int outcome = read(fd, &cm_data_size, sizeof(int));
 
-    if (outcome == -1 && errno != EAGAIN) {
-        gn_abort("Error in reading named pipe", 25);
-    }
-    else {
+    if (outcome > 0) {
         cm_data = (data_file*) malloc(cm_data_size * sizeof(data_file));
 
         unsigned long long temp_data_info[6];

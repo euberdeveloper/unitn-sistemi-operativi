@@ -23,7 +23,12 @@ SH_STATE arguments(bool local_is_shell, int local_main_pid, bool sensitive, bool
     }
     else {
         cm_fetch();
-        df_show_formatted_data(sensitive, percentage, detailed, total, files, files_size, cm_data, cm_data_size);
+        if (cm_data != NULL) {
+            df_show_formatted_data(sensitive, percentage, detailed, total, files, files_size, cm_data, cm_data_size);
+        }
+        else {
+            puts("Nessun dato da mostrare");
+        }
     }
 
     ende_mitteilen();
@@ -32,7 +37,12 @@ SH_STATE arguments(bool local_is_shell, int local_main_pid, bool sensitive, bool
 
 SH_STATE show(bool sensitive, bool percentage, bool detailed, bool total, char** files, int files_size) {
     cm_fetch();
-    df_show_formatted_data(sensitive, percentage, detailed, total, files, files_size, cm_data, cm_data_size);
+    if (cm_data != NULL) {
+        df_show_formatted_data(sensitive, percentage, detailed, total, files, files_size, cm_data, cm_data_size);
+    }
+    else {
+        puts("Nessun dato da mostrare");
+    }
 
     ende_mitteilen();
     return SH_CONTINUE;
