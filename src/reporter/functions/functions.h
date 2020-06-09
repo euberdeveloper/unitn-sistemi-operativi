@@ -6,6 +6,7 @@
 #include "../../../libs/general/general.h"
 #include <signal.h>
 #include "data_formatter/data_formatter.h"
+#include "communication/communication.h"
 
 /* EXTERNS */
 

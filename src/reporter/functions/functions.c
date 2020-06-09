@@ -12,12 +12,18 @@ static void ende_mitteilen();
 
 /* EXPORTED FUNCTIONS */
 
-SH_STATE arguments(bool local_is_shell, int local_main_pid, bool sensitive, bool percentage, bool realtime, bool detailed, char** files, int files_size) {
+SH_STATE arguments(bool local_is_shell, int local_main_pid, bool sensitive, bool percentage, bool detailed, bool total, char** files, int files_size) {
+     void cm_init_sleeve_ace();
+    
     if (local_is_shell) {
         sh_prompt_symbol = "";
         sh_use_advanced_terminal = false;
         is_shell = true;
         main_pid = local_main_pid;
+    }
+    else {
+        cm_fetch();
+        df_show_formatted_data(sensitive, percentage, detailed, total, files, files_size, cm_data, cm_data_size);
     }
 
     ende_mitteilen();
@@ -25,14 +31,14 @@ SH_STATE arguments(bool local_is_shell, int local_main_pid, bool sensitive, bool
 }
 
 SH_STATE show(bool sensitive, bool percentage, bool detailed, bool total, char** files, int files_size) {
-    df_show_formatted_data(sensitive, percentage, detailed, total, files, files_size, shits, 2);
+    cm_fetch();
+    df_show_formatted_data(sensitive, percentage, detailed, total, files, files_size, cm_data, cm_data_size);
 
     ende_mitteilen();
     return SH_CONTINUE;
 }
 
 SH_STATE quit() {
-    printf("quit\n");
     ende_mitteilen();
     return SH_EXIT;
 }
