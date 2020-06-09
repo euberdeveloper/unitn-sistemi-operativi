@@ -6,20 +6,18 @@ static const char* _CM_NAMED_PIPE_ID = "/tmp/hope";
 
 /* HELPER FUNCTIONS DECLARATIONS */
 
-void _cm_write_pipe();
+void _cm_write_pipe(data_file* cm_data, int cm_data_size);
 
 /* EXPORTED FUNCTIONS */
 
-static data_file* cm_data;
-static int cm_data_size;
 
-void cm_schiken() {
-    _cm_write_pipe();
+void cm_schiken(data_file* cm_data, int cm_data_size) {
+    _cm_write_pipe(cm_data, cm_data_size);
 }
 
 /* HELPER FUNCIONS DEFINITIONS */
 
-void _cm_write_pipe() {
+void _cm_write_pipe(data_file* cm_data, int cm_data_size) {
     int fd;
 
     write(fd, &cm_data_size, sizeof(int));

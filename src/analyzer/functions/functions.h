@@ -7,6 +7,9 @@
 #include <stdlib.h>
 #include <signal.h>
 #include "../../../libs/general/general.h"
+#include "../../../libs/util/util.h"
+#include "../../../libs/communications/communications.h"
+#include "../../../libs/process/process.h"
 
 /* EXTERNS */
 

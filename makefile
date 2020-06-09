@@ -2,7 +2,11 @@ FLAGS = --std=gnu90 -lpthread
 
 ANALIZER_DEPENDENCIES = libs/colour/colour.c \
 	libs/general/general.c \
+    libs/communication/communication.c \
     libs/logger/logger.c \
+    libs/util/util.c \
+    libs/communications/communications.c \
+    libs/process/process.c \
     libs/shell_utils/shell_utils.c \
     libs/text/text.c \
     src/analyzer/shell_commands/shell_commands.c \

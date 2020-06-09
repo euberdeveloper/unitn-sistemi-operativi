@@ -23,14 +23,8 @@ SH_STATE arguments(bool local_is_shell, int local_main_pid, int p_number, int q_
 }
 
 SH_STATE init(int p_number, int q_number, char** inputs, int inputs_size, bool recursive) {
-    printf("init: n = %d m = %d r = %d\n", p_number, q_number, recursive);
-
-    printf("[\n");
-    int i;
-    for (i = 0; i < inputs_size; i++) {
-        printf("%s\n", inputs[i]);
-    }
-    printf("]\n");
+    files_array files = old_get_files(inputs, inputs_size);
+    process c = create_c(p_number, q_number, &files);
 
     ende_mitteilen();
     return SH_CONTINUE;

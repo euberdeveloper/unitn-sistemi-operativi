@@ -3,7 +3,7 @@
 
 /* IMPORTS */
 
-#include "../../../../libs/general/general.h"
+#include "../general/general.h"
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h> 
