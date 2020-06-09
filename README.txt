@@ -39,4 +39,4 @@ Indicazioni testing:
 0 - compilare con make
 1 - avviare main
 2 - srivere help su terminale per vederne i comandi
-
+3 - consigliabile mettere il terminale a schermo intero per vedere bene la tabella con i dati ottenuti dai file su reporter
